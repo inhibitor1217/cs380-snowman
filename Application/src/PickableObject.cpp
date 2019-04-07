@@ -2,7 +2,6 @@
 
 PickableObject::PickableObject(Engine::Mesh* mesh, Engine::Material* material) : Engine::RenderObject(mesh, material)
 {
-
 }
 
 void PickableObject::RenderPicking(Engine::Camera* cam)

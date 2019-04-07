@@ -40,22 +40,22 @@ namespace Engine
         RenderObject(Mesh* mesh, Material* material);
 
 
-		void ChangeMaterial(Material* mat);
-        void Render(Camera* cam);
-        void SetMesh(Mesh* mesh) { _mesh = mesh; }
-        void SetMaterial(Material* material) { _material = material; }
-        glm::vec3 GetPosition() { return _position; }
-        void SetPosition(glm::vec3 position) { _position = position; }
-        glm::mat4 GetOrientation() { return _orientation; }
-        void SetOrientation(glm::mat4 orientation) { _orientation = orientation; }
-        glm::vec3 GetScale() { return _scale; }
-        void SetScale(glm::vec3 scale) { _scale = scale; }
-        glm::mat4 GetWorldTransform();
+		virtual void ChangeMaterial(Material* mat);
+        virtual void Render(Camera* cam);
+        virtual void SetMesh(Mesh* mesh) { _mesh = mesh; }
+        virtual void SetMaterial(Material* material) { _material = material; }
+        virtual glm::vec3 GetPosition() { return _position; }
+        virtual void SetPosition(glm::vec3 position) { _position = position; }
+        virtual glm::mat4 GetOrientation() { return _orientation; }
+        virtual void SetOrientation(glm::mat4 orientation) { _orientation = orientation; }
+        virtual glm::vec3 GetScale() { return _scale; }
+        virtual void SetScale(glm::vec3 scale) { _scale = scale; }
+        virtual glm::mat4 GetWorldTransform();
 
-		int GetIndex() { return _index; }
-		void SetIndex(int index) { _index = index; }
+		virtual int GetIndex() { return _index; }
+		virtual void SetIndex(int index) { _index = index; }
 
-		void AddParent(RenderObject *parent_object) { parent = parent_object; };
+		virtual void AddParent(RenderObject *parent_object) { parent = parent_object; };
 
 
 

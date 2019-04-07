@@ -17,13 +17,14 @@ protected:
 public:
 	Geometry();
 	~Geometry();
-	void GenerateCube(Engine::Mesh* mesh);
 	void Quad(Engine::Mesh* mesh, int a_a, int a_b, int a_c, int a_d);
 	glm::vec3 ComputeNormal(glm::vec4 a_a, glm::vec4 a_b, glm::vec4 a_c);
-	void GenerateTriangleMesh(Engine::Mesh* mesh);
+	void GenerateTriangle(Engine::Mesh* mesh);
 	void GenerateLine(Engine::Mesh* mesh);
 	void GenerateStar(Engine::Mesh* mesh);
+	void GenerateSquare(Engine::Mesh *mesh);
 
+	void GenerateCube(Engine::Mesh* mesh);
 	void GenerateIcosphere(Engine::Mesh *mesh, int resolution_level);
 	void GenerateCylinder(Engine::Mesh *mesh, int polygon);
 	void GenerateCylinder(Engine::Mesh *mesh, int polygon, float top_radius, float bottom_radius);

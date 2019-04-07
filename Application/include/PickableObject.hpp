@@ -7,7 +7,7 @@
 #include <Material.hpp>
 #include <PickingMaterial.hpp>
 
-class PickableObject : public Engine::RenderObject
+class PickableObject : virtual public Engine::RenderObject
 {
 private:
     PickingMaterial* _pickingMat;

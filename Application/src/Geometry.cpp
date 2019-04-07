@@ -18,7 +18,6 @@ glm::vec3 Geometry::ComputeNormal(glm::vec4 a_a, glm::vec4 a_b, glm::vec4 a_c)
     return normal;
 }
 
-// TODO: Fill up Geometry::Quad (Slide No. 9)
 void Geometry::Quad(Engine::Mesh* mesh, int a_a, int a_b, int a_c, int a_d)
 {
 	glm::vec4 vertices[8] = {
@@ -78,7 +77,7 @@ void Geometry::GenerateCube(Engine::Mesh* mesh)
     return;
 }
 
-void Geometry::GenerateTriangleMesh(Engine::Mesh* mesh)
+void Geometry::GenerateTriangle(Engine::Mesh* mesh)
 {
     mesh->AddAttribute(4);
 
@@ -374,5 +373,29 @@ void Geometry::GenerateCone(Engine::Mesh *mesh, int polygon)
 	}
 
 	mesh->SetNumElements(6 * polygon);
+	mesh->CreateMesh();
+}
+
+void Geometry::GenerateSquare(Engine::Mesh *mesh)
+{
+	mesh->AddAttribute(4); // position
+	mesh->AddAttribute(4); // normal
+
+	glm::vec3 positions[] = {
+		glm::vec3(-1.0f, 1.0f, 0.0f),
+		glm::vec3(-1.0f, -1.0f, 0.0f),
+		glm::vec3(1.0f, 1.0f, 0.0f),
+		glm::vec3(1.0f, -1.0f, 0.0f)
+	};
+
+	int indices[] = { 0, 1, 3, 0, 3, 2 };
+
+	for (int i = 0; i < 6; i++)
+	{
+		mesh->AddVertexData(glm::vec4(positions[indices[i]], 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	}
+
+	mesh->SetNumElements(6);
 	mesh->CreateMesh();
 }

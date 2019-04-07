@@ -8,7 +8,7 @@ namespace Engine
 
     RenderObject::RenderObject(Mesh* mesh, Material* material) : _mesh(mesh), _material(material), _position(glm::vec3(0.0f)), _orientation(glm::mat4(1.0f)), _scale(glm::vec3(1.0f, 1.0f, 1.0f)), _index(-1), _rotation_speed(0.0f)
     {
-    }
+	}
 
     void RenderObject::ChangeMaterial(Material* mat)
     {

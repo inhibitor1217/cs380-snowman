@@ -23,25 +23,32 @@
 #include <picking.hpp>
 #include <PickableObject.hpp>
 #include <Snowman.hpp>
+#include <UIObject.hpp>
+#include <UISelectableObject.hpp>
+#include <UIButton.hpp>
 
 #define _USE_MATH_DEFINES
 
 GLFWwindow* g_window;
-float g_window_width = 1024.f;
-float g_window_height = 768.f;
-int g_framebuffer_width = 1024;
-int g_framebuffer_height = 768;
+float g_window_width = 1920.0f;
+float g_window_height = 1440.0f;
+int g_framebuffer_width = 1920;
+int g_framebuffer_height = 1440;
 
-/* Global variables for handling camera rotation. */
-bool mode_drag = false;
-float camera_distance = 7.5f;
+/* Static variables for handling camera rotation. */
+static bool mode_drag = false;
+static float camera_distance = 7.5f;
 
-/* Global variables for tracking cursor position. */
-bool cursor_initialized = false;
-float cursor_x = 0.0f, cursor_y = 0.0f, cursor_prev_x = 0.0f, cursor_prev_y = 0.0f;
+/* Static variables for tracking cursor position. */
+static bool cursor_initialized = false;
+static float cursor_x = 0.0f, cursor_y = 0.0f, cursor_prev_x = 0.0f, cursor_prev_y = 0.0f;
 
 /* Sensitivity of mouse dragging. */
 constexpr float DRAG_SPEED = 0.005f;
+
+/* Global pointer to the UI root object. */
+bool uiRootObjectInitialized = false;
+Engine::RenderObject *g_UIRootObject = nullptr;
 
 // TODO: Fill up GLFW mouse button callback function
 static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a_mods)
@@ -55,7 +62,8 @@ static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action
     if (a_button == GLFW_MOUSE_BUTTON_LEFT && a_action == GLFW_PRESS)
     {
         int target = pick((int)xpos, (int)ypos, g_framebuffer_width, g_framebuffer_height);
-        std::cout << "Picked object index: " << target << std::endl;
+        
+
     }
 
 	/* Dragging with right mouse button. */
@@ -143,15 +151,25 @@ int main(int argc, char** argv)
 	Engine::RenderObject *cameraTargetObject = new Engine::RenderObject(nullptr, nullptr);
 	main_camera->AddParent(cameraTargetObject);
 
+	g_UIRootObject = new Engine::RenderObject(nullptr, nullptr);
+	uiRootObjectInitialized = true;
+	g_UIRootObject->AddParent(cameraTargetObject);
+
     Geometry geometry = Geometry();
 
 	Engine::Mesh *mesh = new Engine::Mesh();
-	geometry.GenerateCube(mesh);
+	geometry.GenerateSquare(mesh);
 
 	DefaultMaterial *material = new DefaultMaterial();
 	material->CreateMaterial();
+	PickingMaterial *pickingMaterial = new PickingMaterial();
+	pickingMaterial->CreateMaterial();
 
 	Engine::RenderObject *renderObject = new Engine::RenderObject(mesh, material);
+
+	UIButton *buttonObject = new UIButton(mesh, material);
+	buttonObject->SetPickingMat(pickingMaterial);
+	buttonObject->SetIndex(1);
 
     float prev_time = 0;
 
@@ -182,7 +200,6 @@ int main(int argc, char** argv)
 			);
 		}
 
-        // First Pass: Object Selection (Slide No. 20)
         // this is for picking the object using mouse interaction
         // binding framebuffer
         glBindFramebuffer(GL_FRAMEBUFFER, picking_fbo);
@@ -191,9 +208,8 @@ int main(int argc, char** argv)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // render your objects that you want to select using mouse interaction here
+		buttonObject->RenderPicking(main_camera);
 
-
-        // Second Pass: Object Rendering (Slide No. 11)
         // Drawing object again
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor((GLclampf) 0.0f, (GLclampf) 0.0f, (GLclampf) 0.0f, (GLclampf) 0.0f);
@@ -204,6 +220,7 @@ int main(int argc, char** argv)
         // Todo: Render object with main camera in the loop
 		material->UpdateColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		renderObject->Render(main_camera);
+		buttonObject->Render(main_camera);
 
 		/* Swap front and back buffers */
         glfwSwapBuffers(g_window);
