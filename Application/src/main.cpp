@@ -124,14 +124,13 @@ int main(int argc, char** argv)
     // TODO: Create mesh and material (in main.cpp) Slide No. 10 (Define cube mesh, material), No. 18 (Define pickable object)
 	Geometry geometry = Geometry();
 
-	Engine::Mesh *sphere = new Engine::Mesh();
-	geometry.GenerateIcosphere(sphere, 3);
+	Engine::Mesh *mesh = new Engine::Mesh();
+	geometry.GenerateCylinder(mesh, 32, 0.5f, 1.5f);
 
 	DefaultMaterial *material = new DefaultMaterial();
 	material->CreateMaterial();
 
-	Engine::RenderObject *sphereObject = new Engine::RenderObject(sphere, material);
-	sphereObject->SetScale(glm::vec3(3.0f, 3.0f, 3.0f));
+	Engine::RenderObject *renderObject = new Engine::RenderObject(mesh, material);
 
     float prev_time = 0;
 
@@ -163,9 +162,9 @@ int main(int argc, char** argv)
 
         // Todo: Render object with main camera in the loop
 		material->UpdateColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-		sphereObject->Render(main_camera);
+		renderObject->Render(main_camera);
 
-		sphereObject->SetOrientation(glm::rotate(sphereObject->GetOrientation(), elapsed_time, glm::vec3(1.0f, 1.0f, 1.0f)));
+		renderObject->SetOrientation(glm::rotate(renderObject->GetOrientation(), elapsed_time, glm::vec3(1.0f, 1.0f, 1.0f)));
 
 		/* Swap front and back buffers */
         glfwSwapBuffers(g_window);

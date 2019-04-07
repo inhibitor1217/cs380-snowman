@@ -1,6 +1,8 @@
 #include <Geometry.hpp>
 #include <stdlib.h>
 
+constexpr float PI = 3.1415926f;
+
 Geometry::Geometry()
 {
 }
@@ -135,12 +137,6 @@ void Geometry::GenerateStar(Engine::Mesh* mesh)
 	return;
 }
 
-/* A helper function for normalizer. */
-glm::vec3 normalize(glm::vec3 v)
-{
-	return (1.0f / sqrt(v.x * v.x + v.y * v.y + v.z * v.z)) * v;
-}
-
 void Geometry::GenerateIcosphere(Engine::Mesh *mesh, int resolution_level)
 {
 	mesh->AddAttribute(4); // position
@@ -149,18 +145,18 @@ void Geometry::GenerateIcosphere(Engine::Mesh *mesh, int resolution_level)
 	const float x = 0.5f * (1.0f + sqrt(5.0f));
 	std::vector<glm::vec3> faces, faces_buffer;
 	glm::vec3 initial_pos[12] = {
-		normalize(glm::vec3(-1.0f,     x,  0.0f)),
-		normalize(glm::vec3( 1.0f,     x,  0.0f)),
-		normalize(glm::vec3(-1.0f,    -x,  0.0f)),
-		normalize(glm::vec3( 1.0f,    -x,  0.0f)),
-		normalize(glm::vec3( 0.0f, -1.0f,     x)),
-		normalize(glm::vec3( 0.0f,  1.0f,     x)),
-		normalize(glm::vec3( 0.0f, -1.0f,    -x)),
-		normalize(glm::vec3( 0.0f,  1.0f,    -x)),
-		normalize(glm::vec3(    x,  0.0f, -1.0f)),
-		normalize(glm::vec3(    x,  0.0f,  1.0f)),
-		normalize(glm::vec3(   -x,  0.0f, -1.0f)),
-		normalize(glm::vec3(   -x,  0.0f,  1.0f))
+		glm::normalize(glm::vec3(-1.0f,     x,  0.0f)),
+		glm::normalize(glm::vec3( 1.0f,     x,  0.0f)),
+		glm::normalize(glm::vec3(-1.0f,    -x,  0.0f)),
+		glm::normalize(glm::vec3( 1.0f,    -x,  0.0f)),
+		glm::normalize(glm::vec3( 0.0f, -1.0f,     x)),
+		glm::normalize(glm::vec3( 0.0f,  1.0f,     x)),
+		glm::normalize(glm::vec3( 0.0f, -1.0f,    -x)),
+		glm::normalize(glm::vec3( 0.0f,  1.0f,    -x)),
+		glm::normalize(glm::vec3(    x,  0.0f, -1.0f)),
+		glm::normalize(glm::vec3(    x,  0.0f,  1.0f)),
+		glm::normalize(glm::vec3(   -x,  0.0f, -1.0f)),
+		glm::normalize(glm::vec3(   -x,  0.0f,  1.0f))
 	};
 	int initial_indices[60] = {
 		0, 11, 5, 0, 5, 1, 0, 1, 7, 0, 7, 10, 0, 10, 11,
@@ -180,9 +176,9 @@ void Geometry::GenerateIcosphere(Engine::Mesh *mesh, int resolution_level)
 
 		for (int i = 0; i < faces.size(); i += 3)
 		{
-			glm::vec3 m1 = normalize(faces[i + 0] + faces[i + 1]);
-			glm::vec3 m2 = normalize(faces[i + 1] + faces[i + 2]);
-			glm::vec3 m3 = normalize(faces[i + 2] + faces[i + 0]);
+			glm::vec3 m1 = glm::normalize(faces[i + 0] + faces[i + 1]);
+			glm::vec3 m2 = glm::normalize(faces[i + 1] + faces[i + 2]);
+			glm::vec3 m3 = glm::normalize(faces[i + 2] + faces[i + 0]);
 
 			glm::vec3 refined_triangles[12] = {
 				faces[i], m1, m3, faces[i + 1], m2, m1, faces[i + 2], m3, m2, m1, m2, m3
@@ -203,5 +199,180 @@ void Geometry::GenerateIcosphere(Engine::Mesh *mesh, int resolution_level)
 	}
 
 	mesh->SetNumElements(faces.size());
+	mesh->CreateMesh();
+}
+
+void Geometry::GenerateCylinder(Engine::Mesh *mesh, int polygon)
+{
+	if (polygon < 3)
+	{
+		std::cout << "GenerateCylinder: assert fails at polygon >= 3" << std::endl;
+		throw std::exception();
+	}
+
+	const float angle = 2 * PI / static_cast<float>(polygon);
+
+	mesh->AddAttribute(4); // position
+	mesh->AddAttribute(4); // normal
+
+	/* Add top faces. */
+	for (int i = 0; i < polygon; i++)
+	{
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(cos(angle * i), sin(angle * i), 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1)), sin(angle * (i + 1)), 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	}
+
+	/* Add bottom faces. */
+	for (int i = 0; i < polygon; i++)
+	{
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1)), sin(angle * (i + 1)), -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(cos(angle * i), sin(angle * i), -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
+	}
+
+	/* Add side faces. */
+	for (int i = 0; i < polygon; i++)
+	{
+		mesh->AddVertexData(glm::vec4(cos(angle * i), sin(angle * i), 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * i), sin(angle * i), 0.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(cos(angle * i), sin(angle * i), -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * i), sin(angle * i), 0.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1)), sin(angle * (i + 1)), -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1)), sin(angle * (i + 1)), 0.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(cos(angle * i), sin(angle * i), 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * i), sin(angle * i), 0.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1)), sin(angle * (i + 1)), -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1)), sin(angle * (i + 1)), 0.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1)), sin(angle * (i + 1)), 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1)), sin(angle * (i + 1)), 0.0f, 1.0f));
+	}
+
+	mesh->SetNumElements(12 * polygon);
+	mesh->CreateMesh();
+}
+
+void Geometry::GenerateCylinder(Engine::Mesh *mesh, int polygon, float top_radius, float bottom_radius)
+{
+	if (polygon < 3)
+	{
+		std::cout << "GenerateCylinder: assert fails at polygon >= 3" << std::endl;
+		throw std::exception();
+	}
+
+	const float angle = 2 * PI / static_cast<float>(polygon);
+
+	mesh->AddAttribute(4); // position
+	mesh->AddAttribute(4); // normal
+
+	/* Add top faces. */
+	for (int i = 0; i < polygon; i++)
+	{
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(top_radius * cos(angle * i), top_radius * sin(angle * i), 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(top_radius * cos(angle * (i + 1)), top_radius * sin(angle * (i + 1)), 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	}
+
+	/* Add bottom faces. */
+	for (int i = 0; i < polygon; i++)
+	{
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(bottom_radius * cos(angle * (i + 1.5f)), bottom_radius * sin(angle * (i + 1.5f)), -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(bottom_radius * cos(angle * (i + 0.5f)), bottom_radius * sin(angle * (i + 0.5f)), -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
+	}
+
+	/* Add side faces. */
+	for (int i = 0; i < polygon; i++)
+	{
+		float normal_z = 0.5f * (bottom_radius - top_radius);
+
+		mesh->AddVertexData(glm::vec4(top_radius * cos(angle * i), top_radius * sin(angle * i), 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * i), sin(angle * i), normal_z, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(bottom_radius * cos(angle * (i + 0.5f)), bottom_radius * sin(angle * (i + 0.5f)), -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 0.5f)), sin(angle * (i + 0.5f)), normal_z, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(top_radius * cos(angle * (i + 1)), top_radius * sin(angle * (i + 1)), 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1)), sin(angle * (i + 1)), normal_z, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(bottom_radius * cos(angle * (i + 0.5f)), bottom_radius * sin(angle * (i + 0.5f)), -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 0.5f)), sin(angle * (i + 0.5f)), normal_z, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(bottom_radius * cos(angle * (i + 1.5f)), bottom_radius * sin(angle * (i + 1.5f)), -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1.5f)), sin(angle * (i + 1.5f)), normal_z, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(top_radius * cos(angle * (i + 1)), top_radius * sin(angle * (i + 1)), 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1)), sin(angle * (i + 1)), normal_z, 1.0f));
+	}
+
+	mesh->SetNumElements(12 * polygon);
+	mesh->CreateMesh();
+}
+
+void Geometry::GenerateCone(Engine::Mesh *mesh, int polygon)
+{
+	if (polygon < 3)
+	{
+		std::cout << "GenerateCone: assert fails at polygon >= 3" << std::endl;
+		throw std::exception();
+	}
+
+	const float angle = 2 * PI / static_cast<float>(polygon);
+
+	mesh->AddAttribute(4); // position
+	mesh->AddAttribute(4); // normal
+
+	/* Add bottom faces. */
+	for (int i = 0; i < polygon; i++)
+	{
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1)), sin(angle * (i + 1)), 0.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(cos(angle * i), sin(angle * i), 0.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
+	}
+
+	/* Add side faces. */
+	for (int i = 0; i < polygon; i++)
+	{
+		mesh->AddVertexData(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 0.5f)), sin(angle * (i + 0.5f)), 1.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(cos(angle * i), sin(angle * i), 0.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * i), sin(angle * i), 1.0f, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1)), sin(angle * (i + 1)), 0.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(angle * (i + 1)), sin(angle * (i + 1)), 1.0f, 1.0f));
+	}
+
+	mesh->SetNumElements(6 * polygon);
 	mesh->CreateMesh();
 }

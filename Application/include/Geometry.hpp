@@ -25,5 +25,8 @@ public:
 	void GenerateStar(Engine::Mesh* mesh);
 
 	void GenerateIcosphere(Engine::Mesh *mesh, int resolution_level);
+	void GenerateCylinder(Engine::Mesh *mesh, int polygon);
+	void GenerateCylinder(Engine::Mesh *mesh, int polygon, float top_radius, float bottom_radius);
+	void GenerateCone(Engine::Mesh *mesh, int polygon);
 };
 
