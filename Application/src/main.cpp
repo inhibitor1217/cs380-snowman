@@ -66,28 +66,6 @@ static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action
 	xpos = xpos / ((double)g_window_width) * ((double)g_framebuffer_width);
 	ypos = ypos / ((double)g_window_height) * ((double)g_framebuffer_height);
 
-    //example code for get x position and y position of mouse click
-    if (a_button == GLFW_MOUSE_BUTTON_LEFT)
-    {
-        int target = pick((int)xpos, (int)ypos, g_framebuffer_width, g_framebuffer_height);
-
-		if (a_action == GLFW_PRESS)
-		{
-			press_target = target;
-			if (press_target != 0)
-				g_renderObjects[press_target]->onPress();
-
-		}
-		else if (a_action == GLFW_RELEASE)
-		{
-			if (press_target != 0)
-				g_renderObjects[press_target]->onRelease();
-			if (target == press_target && press_target != 0)
-				g_renderObjects[press_target]->onClick();
-			press_target = 0;
-		}
-    }
-
 	/* Dragging with right mouse button. */
 	if (a_button == GLFW_MOUSE_BUTTON_RIGHT)
 	{
@@ -95,6 +73,31 @@ static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action
 			mode_drag = true;
 		else if (a_action == GLFW_RELEASE)
 			mode_drag = false;
+	}
+
+	else if (a_button == GLFW_MOUSE_BUTTON_LEFT)
+	{
+		/* Manage picking system. */
+		if (!mode_drag)
+		{
+			int target = pick((int)xpos, (int)ypos, g_framebuffer_width, g_framebuffer_height);
+
+			if (a_action == GLFW_PRESS)
+			{
+				press_target = target;
+				if (g_renderObjects[press_target])
+					g_renderObjects[press_target]->onPress();
+
+			}
+			else if (a_action == GLFW_RELEASE)
+			{
+				if (g_renderObjects[press_target])
+					g_renderObjects[press_target]->onRelease();
+				if (target == press_target && g_renderObjects[press_target])
+					g_renderObjects[press_target]->onClick();
+				press_target = 0;
+			}
+		}
 	}
 }
 
@@ -107,10 +110,14 @@ static void CursorPosCallback(GLFWwindow* a_window, double a_xpos, double a_ypos
 	int new_target = pick((int)a_xpos, (int)a_ypos, g_framebuffer_width, g_framebuffer_height);
 	if (new_target != hover_target)
 	{
-		if (hover_target != 0)
-			g_renderObjects[hover_target]->onExit();
-		if (new_target != 0)
-			g_renderObjects[new_target]->onEnter();
+		/* Manage hovering system. */
+		if (!mode_drag)
+		{
+			if (g_renderObjects[hover_target])
+				g_renderObjects[hover_target]->onExit();
+			if (g_renderObjects[new_target])
+				g_renderObjects[new_target]->onEnter();
+		}
 	}
 	hover_target = new_target;
 }
