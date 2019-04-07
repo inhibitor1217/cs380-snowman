@@ -53,11 +53,14 @@ namespace Engine
         virtual glm::mat4 GetWorldTransform();
 
 		virtual int GetIndex() { return _index; }
-		virtual void SetIndex(int index) { _index = index; }
+		virtual void SetIndex(int index);
 
 		virtual void AddParent(RenderObject *parent_object) { parent = parent_object; };
 
-
-
+		virtual void onPress() {}
+		virtual void onRelease() {}
+		virtual void onClick() {}
+		virtual void onEnter() {}
+		virtual void onExit() {}
     };
 }

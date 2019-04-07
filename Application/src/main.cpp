@@ -2,6 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
+#include <map>
 
 // include opengl extension and application library
 #include <GL/glew.h>
@@ -46,9 +47,16 @@ static float cursor_x = 0.0f, cursor_y = 0.0f, cursor_prev_x = 0.0f, cursor_prev
 /* Sensitivity of mouse dragging. */
 constexpr float DRAG_SPEED = 0.005f;
 
+/* Static variables for controlling UI picking system. */
+static int press_target = 0;
+static int hover_target = 0;
+
 /* Global pointer to the UI root object. */
 bool uiRootObjectInitialized = false;
 Engine::RenderObject *g_UIRootObject = nullptr;
+
+/* Global map containing all render objects with indices. */
+std::map<int, Engine::RenderObject *> g_renderObjects;
 
 // TODO: Fill up GLFW mouse button callback function
 static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a_mods)
@@ -59,11 +67,25 @@ static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action
 	ypos = ypos / ((double)g_window_height) * ((double)g_framebuffer_height);
 
     //example code for get x position and y position of mouse click
-    if (a_button == GLFW_MOUSE_BUTTON_LEFT && a_action == GLFW_PRESS)
+    if (a_button == GLFW_MOUSE_BUTTON_LEFT)
     {
         int target = pick((int)xpos, (int)ypos, g_framebuffer_width, g_framebuffer_height);
-        
 
+		if (a_action == GLFW_PRESS)
+		{
+			press_target = target;
+			if (press_target != 0)
+				g_renderObjects[press_target]->onPress();
+
+		}
+		else if (a_action == GLFW_RELEASE)
+		{
+			if (press_target != 0)
+				g_renderObjects[press_target]->onRelease();
+			if (target == press_target && press_target != 0)
+				g_renderObjects[press_target]->onClick();
+			press_target = 0;
+		}
     }
 
 	/* Dragging with right mouse button. */
@@ -81,6 +103,16 @@ static void CursorPosCallback(GLFWwindow* a_window, double a_xpos, double a_ypos
 {
 	cursor_x = static_cast<float>(a_xpos);
 	cursor_y = static_cast<float>(a_ypos);
+
+	int new_target = pick((int)a_xpos, (int)a_ypos, g_framebuffer_width, g_framebuffer_height);
+	if (new_target != hover_target)
+	{
+		if (hover_target != 0)
+			g_renderObjects[hover_target]->onExit();
+		if (new_target != 0)
+			g_renderObjects[new_target]->onEnter();
+	}
+	hover_target = new_target;
 }
 
 static void KeyboardCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, int a_mods)
@@ -127,7 +159,6 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
 
@@ -144,6 +175,8 @@ int main(int argc, char** argv)
 
     // Initialize framebuffer object and picking textures
     pickingInitialize(g_framebuffer_width, g_framebuffer_width);
+
+	g_renderObjects = std::map<int, Engine::RenderObject *>();
 
     Engine::Camera* main_camera = new Engine::Camera();
     main_camera->SetPosition(glm::vec3(0.0f, 0.0f, camera_distance));
@@ -167,10 +200,18 @@ int main(int argc, char** argv)
 
 	Engine::RenderObject *renderObject = new Engine::RenderObject(mesh, material);
 
-	UIButton *buttonObject = new UIButton(mesh, material);
-	buttonObject->SetPickingMat(pickingMaterial);
-	buttonObject->SetIndex(1);
-
+	UIButton *btn1 = new UIButton(mesh, material);
+	btn1->SetIndex(1);
+	btn1->SetPickingMat(pickingMaterial);
+	btn1->SetPosition(glm::vec3(-0.1f, -0.1f, 6.0f));
+	btn1->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
+	
+	UIButton *btn2 = new UIButton(mesh, material);
+	btn2->SetIndex(2);
+	btn2->SetPickingMat(pickingMaterial);
+	btn2->SetPosition(glm::vec3(0.1f, -0.1f, 6.0f));
+	btn2->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
+	
     float prev_time = 0;
 
     /* Loop until the user closes the window */
@@ -208,20 +249,23 @@ int main(int argc, char** argv)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // render your objects that you want to select using mouse interaction here
-		buttonObject->RenderPicking(main_camera);
+		btn1->RenderPicking(main_camera);
+		btn2->RenderPicking(main_camera);
 
+		
         // Drawing object again
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor((GLclampf) 0.0f, (GLclampf) 0.0f, (GLclampf) 0.0f, (GLclampf) 0.0f);
 
-        /* Render here */
+		// Render
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Todo: Render object with main camera in the loop
 		material->UpdateColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		renderObject->Render(main_camera);
-		buttonObject->Render(main_camera);
-
+		material->UpdateColor(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+		btn1->Render(main_camera);
+		btn2->Render(main_camera);
+		
 		/* Swap front and back buffers */
         glfwSwapBuffers(g_window);
 
@@ -233,6 +277,9 @@ int main(int argc, char** argv)
 
     // Delete resources
     delete main_camera;
+	deletePickingResources();
+	
+	g_renderObjects.clear();
 
     glfwTerminate();
     return 0;

@@ -1,4 +1,7 @@
 #include <RenderObject.hpp>
+#include <map>
+
+extern std::map<int, Engine::RenderObject *> g_renderObjects;
 
 namespace Engine
 {
@@ -86,6 +89,16 @@ namespace Engine
         glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), _scale);
         return parent_WorldTransform * glm::inverse(parent_scale) * translationMatrix * _orientation * scaleMatrix;
     }
+
+	void RenderObject::SetIndex(int index)
+	{
+		_index = index;
+
+		if (g_renderObjects.find(index) != g_renderObjects.end())
+			throw std::exception();
+
+		g_renderObjects[index] = this;
+	}
 }
 
 
