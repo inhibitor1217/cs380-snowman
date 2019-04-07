@@ -32,28 +32,47 @@ float g_window_height = 768.f;
 int g_framebuffer_width = 1024;
 int g_framebuffer_height = 768;
 
+/* Global variables for handling camera rotation. */
+bool mode_drag = false;
+float camera_distance = 7.5f;
+
+/* Global variables for tracking cursor position. */
+bool cursor_initialized = false;
+float cursor_x = 0.0f, cursor_y = 0.0f, cursor_prev_x = 0.0f, cursor_prev_y = 0.0f;
+
+/* Sensitivity of mouse dragging. */
+constexpr float DRAG_SPEED = 0.005f;
 
 // TODO: Fill up GLFW mouse button callback function
 static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a_mods)
 {
+	double xpos, ypos;
+	glfwGetCursorPos(a_window, &xpos, &ypos);
+	xpos = xpos / ((double)g_window_width) * ((double)g_framebuffer_width);
+	ypos = ypos / ((double)g_window_height) * ((double)g_framebuffer_height);
+
     //example code for get x position and y position of mouse click
     if (a_button == GLFW_MOUSE_BUTTON_LEFT && a_action == GLFW_PRESS)
     {
-        double xpos, ypos;
-        glfwGetCursorPos(a_window, &xpos, &ypos);
-        xpos = xpos / ((double)g_window_width) * ((double)g_framebuffer_width);
-        ypos = ypos / ((double)g_window_height) * ((double)g_framebuffer_height);
         int target = pick((int)xpos, (int)ypos, g_framebuffer_width, g_framebuffer_height);
         std::cout << "Picked object index: " << target << std::endl;
-
-		
     }
+
+	/* Dragging with right mouse button. */
+	if (a_button == GLFW_MOUSE_BUTTON_RIGHT)
+	{
+		if (a_action == GLFW_PRESS)
+			mode_drag = true;
+		else if (a_action == GLFW_RELEASE)
+			mode_drag = false;
+	}
 }
 
 // TODO: Fill up GLFW cursor position callback function
 static void CursorPosCallback(GLFWwindow* a_window, double a_xpos, double a_ypos)
 {
-
+	cursor_x = static_cast<float>(a_xpos);
+	cursor_y = static_cast<float>(a_ypos);
 }
 
 static void KeyboardCallback(GLFWwindow* a_window, int a_key, int a_scancode, int a_action, int a_mods)
@@ -119,13 +138,15 @@ int main(int argc, char** argv)
     pickingInitialize(g_framebuffer_width, g_framebuffer_width);
 
     Engine::Camera* main_camera = new Engine::Camera();
-    main_camera->SetPosition(glm::vec3(0.0f, 0.0f, 7.5f));
+    main_camera->SetPosition(glm::vec3(0.0f, 0.0f, camera_distance));
 
-    // TODO: Create mesh and material (in main.cpp) Slide No. 10 (Define cube mesh, material), No. 18 (Define pickable object)
-	Geometry geometry = Geometry();
+	Engine::RenderObject *cameraTargetObject = new Engine::RenderObject(nullptr, nullptr);
+	main_camera->AddParent(cameraTargetObject);
+
+    Geometry geometry = Geometry();
 
 	Engine::Mesh *mesh = new Engine::Mesh();
-	geometry.GenerateCylinder(mesh, 32, 0.5f, 1.5f);
+	geometry.GenerateCube(mesh);
 
 	DefaultMaterial *material = new DefaultMaterial();
 	material->CreateMaterial();
@@ -140,6 +161,26 @@ int main(int argc, char** argv)
         float total_time = (float)glfwGetTime();
         float elapsed_time = total_time - prev_time;
         prev_time = total_time;
+
+		float input_cursor_x = cursor_x - cursor_prev_x;
+		float input_cursor_y = cursor_y - cursor_prev_y;
+		cursor_prev_x = cursor_x;
+		cursor_prev_y = cursor_y;
+
+		/* Handle camera rotation when drag mode is enabled.
+		 * We can do it in a clever way: instead of adusting both rotation and position of the camera,
+		 * we can attach a dummy look-at object at the selected object,
+		 * and parent the camera's transform to the dummy object.
+		 * Then, by controlling the rotation of the dummy object, the camera's position and rotation are adjusted. */
+		if (cursor_initialized && mode_drag)
+		{
+			cameraTargetObject->SetOrientation(
+				glm::rotate(cameraTargetObject->GetOrientation(), -DRAG_SPEED * input_cursor_x, glm::vec3(0.0f, 1.0f, 0.0f))
+			);
+			cameraTargetObject->SetOrientation(
+				glm::rotate(cameraTargetObject->GetOrientation(), -DRAG_SPEED * input_cursor_y, glm::vec3(1.0f, 0.0f, 0.0f))
+			);
+		}
 
         // First Pass: Object Selection (Slide No. 20)
         // this is for picking the object using mouse interaction
@@ -164,13 +205,13 @@ int main(int argc, char** argv)
 		material->UpdateColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		renderObject->Render(main_camera);
 
-		renderObject->SetOrientation(glm::rotate(renderObject->GetOrientation(), elapsed_time, glm::vec3(1.0f, 1.0f, 1.0f)));
-
 		/* Swap front and back buffers */
         glfwSwapBuffers(g_window);
 
         /* Poll for and process events */
         glfwPollEvents();
+
+		cursor_initialized = true;
     }
 
     // Delete resources

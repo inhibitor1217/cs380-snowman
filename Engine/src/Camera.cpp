@@ -17,8 +17,19 @@ namespace Engine
 
     glm::mat4 Camera::GetCameraTransform()
     {
-        glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), _position);
-        return _orientation * translationMatrix;
+		// Compute TR (ignore the scale)
+		glm::mat4 parent_translationMatrix = glm::mat4(1.0f);
+		glm::mat4 parent_orientation = glm::mat4(1.0f);
+		glm::mat4 parent_WorldTransform = glm::mat4(1.0f);
+		if (parent != NULL)
+		{
+			parent_translationMatrix = glm::translate(glm::mat4(1.0f), parent->GetPosition());
+			parent_orientation = parent->GetOrientation();
+			parent_WorldTransform = parent->GetWorldTransform();
+
+		}
+		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), _position);
+		return parent_WorldTransform * translationMatrix * _orientation;
     }
 
     void Camera::SetProjection(float aspectRatio, float fov, float zNear, float zFar) 

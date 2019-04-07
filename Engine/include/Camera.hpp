@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <RenderObject.hpp>
+
 namespace Engine
 {
     struct ProjectionData
@@ -13,12 +15,16 @@ namespace Engine
         float zFar = 1000.0f;
     };
 
+	class RenderObject; // forward definition
+
     class Camera
     {
     private:
         glm::vec3 _position;
         glm::mat4 _orientation;
         ProjectionData _projection;
+
+		RenderObject *parent = NULL;
     public:
         Camera();
         Camera(glm::vec3 position, glm::mat4 orientation);
@@ -34,5 +40,7 @@ namespace Engine
         void SetProjection(float aspectRatio, float fov, float zNear, float zFar);
         ProjectionData GetProjection();
         glm::mat4 GetProjectionMatrix() { return glm::perspective(glm::radians(_projection.fov), _projection.aspectRatio, _projection.zNear, _projection.zFar); }
+
+		void AddParent(RenderObject *parent_object) { parent = parent_object; };
     };
 } // Engine

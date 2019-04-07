@@ -13,6 +13,8 @@
 
 namespace Engine
 {
+	class Camera; // forward definition
+
     class RenderObject
     {
     private:
