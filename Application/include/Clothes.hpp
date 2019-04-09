@@ -14,12 +14,19 @@ private:
 		Engine::RenderObject *root, *body, *ribbon, *bottom;
 	};
 
+	struct CarrotNoseObject
+	{
+		Engine::RenderObject *root;
+	};
+
 public:
 	struct HatObject hat;
+	struct CarrotNoseObject carrotNose;
 
 public:
 	Clothes(Geometry geometry, Engine::Material *material);
 	~Clothes();
 
 	void RenderHat(Engine::Camera *camera, DefaultMaterial *material);
+	void RenderCarrotNose(Engine::Camera *camera, DefaultMaterial *material);
 };

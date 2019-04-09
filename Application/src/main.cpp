@@ -226,8 +226,6 @@ int main(int argc, char** argv)
 
 	Engine::Mesh *squareMesh = new Engine::Mesh();
 	geometry.GenerateSquare(squareMesh);
-	Engine::Mesh *sphereMesh = new Engine::Mesh();
-	geometry.GenerateIcosphere(sphereMesh, 4);
 
 	DefaultMaterial *material = new DefaultMaterial();
 	material->CreateMaterial();
@@ -239,11 +237,12 @@ int main(int argc, char** argv)
 	terrainObject->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 
 	// Create actual components and attach them to skeleton
-	Snowman *snowman = new Snowman(sphereMesh, material);
+	Snowman *snowman = new Snowman(geometry, material);
 
 	// Create customizable clothes
 	Clothes *clothes = new Clothes(geometry, material);
-	clothes->hat.root->SetPosition(glm::vec3(0.0f, 0.0f, 4.1f));
+	snowman->SetHeadAccessory(clothes->hat.root);
+	snowman->SetNose(clothes->carrotNose.root);
 
 	// Set camera focus
 	cameraTargetObject->SetPosition(snowman->GetRootObject()->GetPosition());
@@ -340,8 +339,9 @@ int main(int argc, char** argv)
 		// Render Regular objects
 		material->UpdateEnableLighting(true);
 		material->UpdateColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-		snowman->Render(main_camera);
+		snowman->Render(main_camera, material);
 		clothes->RenderHat(main_camera, material);
+		clothes->RenderCarrotNose(main_camera, material);
 
 		material->UpdateColor(glm::vec4(0x68 / 255.0f, 0x41 / 255.0f, 0x32 / 255.0f, 1.0f));
 		terrainObject->Render(main_camera);
