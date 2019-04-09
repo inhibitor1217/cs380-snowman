@@ -258,7 +258,6 @@ int main(int argc, char** argv)
         // render your objects that you want to select using mouse interaction here
 		btn1->RenderPicking(main_camera);
 		btn2->RenderPicking(main_camera);
-
 		
         // Drawing object again
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -269,8 +268,9 @@ int main(int argc, char** argv)
 
 		material->UpdateColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		renderObject->Render(main_camera);
-		material->UpdateColor(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+		material->UpdateColor(glm::vec4(btn1->GetRenderColor(), 1.0f));
 		btn1->Render(main_camera);
+		material->UpdateColor(glm::vec4(btn2->GetRenderColor(), 1.0f));
 		btn2->Render(main_camera);
 		
 		/* Swap front and back buffers */
