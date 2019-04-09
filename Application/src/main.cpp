@@ -27,6 +27,7 @@
 #include <UIObject.hpp>
 #include <UISelectableObject.hpp>
 #include <UIButton.hpp>
+#include <UIToggler.hpp>
 
 #define _USE_MATH_DEFINES
 
@@ -39,13 +40,14 @@ int g_framebuffer_height = 1440;
 /* Static variables for handling camera rotation. */
 static bool mode_drag = false;
 static float camera_distance = 7.5f;
+static float ui_distance = 1.0f;
 
 /* Static variables for tracking cursor position. */
 static bool cursor_initialized = false;
 static float cursor_x = 0.0f, cursor_y = 0.0f, cursor_prev_x = 0.0f, cursor_prev_y = 0.0f;
 
 /* Sensitivity of mouse dragging. */
-constexpr float DRAG_SPEED = 0.005f;
+constexpr float DRAG_SPEED = 0.002f;
 
 /* Static variables for controlling UI picking system. */
 static int press_target = 0;
@@ -185,38 +187,42 @@ int main(int argc, char** argv)
 
 	g_renderObjects = std::map<int, Engine::RenderObject *>();
 
+	// Initialize Camera
     Engine::Camera* main_camera = new Engine::Camera();
     main_camera->SetPosition(glm::vec3(0.0f, 0.0f, camera_distance));
-
 	Engine::RenderObject *cameraTargetObject = new Engine::RenderObject(nullptr, nullptr);
 	main_camera->AddParent(cameraTargetObject);
 
+	// Initialize UI System
 	g_UIRootObject = new Engine::RenderObject(nullptr, nullptr);
 	uiRootObjectInitialized = true;
 	g_UIRootObject->AddParent(cameraTargetObject);
 
     Geometry geometry = Geometry();
 
-	Engine::Mesh *mesh = new Engine::Mesh();
-	geometry.GenerateSquare(mesh);
+	Engine::Mesh *squareMesh = new Engine::Mesh();
+	geometry.GenerateSquare(squareMesh);
+	Engine::Mesh *cubeMesh = new Engine::Mesh();
+	geometry.GenerateCube(cubeMesh);
 
 	DefaultMaterial *material = new DefaultMaterial();
 	material->CreateMaterial();
 	PickingMaterial *pickingMaterial = new PickingMaterial();
 	pickingMaterial->CreateMaterial();
 
-	Engine::RenderObject *renderObject = new Engine::RenderObject(mesh, material);
+	Engine::RenderObject *renderObject = new Engine::RenderObject(cubeMesh, material);
 
-	UIButton *btn1 = new UIButton(mesh, material);
+	// Create UI objects
+	UIButton *btn1 = new UIButton(squareMesh, material);
 	btn1->SetIndex(1);
 	btn1->SetPickingMat(pickingMaterial);
-	btn1->SetPosition(glm::vec3(-0.1f, -0.1f, 6.0f));
+	btn1->SetPosition(glm::vec3(-0.1f, -0.5f, camera_distance - ui_distance));
 	btn1->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
 	
-	UIButton *btn2 = new UIButton(mesh, material);
+	UIToggler *btn2 = new UIToggler(squareMesh, material);
 	btn2->SetIndex(2);
 	btn2->SetPickingMat(pickingMaterial);
-	btn2->SetPosition(glm::vec3(0.1f, -0.1f, 6.0f));
+	btn2->SetPosition(glm::vec3(0.1f, -0.5f, camera_distance - ui_distance));
 	btn2->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
 	
     float prev_time = 0;
@@ -256,8 +262,14 @@ int main(int argc, char** argv)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // render your objects that you want to select using mouse interaction here
-		btn1->RenderPicking(main_camera);
-		btn2->RenderPicking(main_camera);
+		for (auto it : g_renderObjects)
+		{
+			Engine::RenderObject *obj = it.second;
+			if (obj != nullptr)
+			{
+				obj->RenderPicking(main_camera);
+			}
+		}
 		
         // Drawing object again
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
