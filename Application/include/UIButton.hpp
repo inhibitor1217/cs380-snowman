@@ -9,8 +9,8 @@ private:
 	bool _hover = false;
 
 	glm::vec3 _color = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 _pressed_color = glm::vec3(0.8f, 0.8f, 0.8f);
-	glm::vec3 _hover_color = glm::vec3(0.9f, 0.9f, 0.9f);
+	glm::vec3 _pressed_color = glm::vec3(0.6f, 0.6f, 0.6f);
+	glm::vec3 _hover_color = glm::vec3(0.8f, 0.8f, 0.8f);
 
 public:
 	UIButton(Engine::Mesh *mesh, Engine::Material *material): 

@@ -263,11 +263,16 @@ int main(int argc, char** argv)
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor((GLclampf) 0.0f, (GLclampf) 0.0f, (GLclampf) 0.0f, (GLclampf) 0.0f);
 
-		// Render
+		// Clear frame buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Render Regular objects
+		material->UpdateEnableLighting(true);
 		material->UpdateColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		renderObject->Render(main_camera);
+
+		// Render UIs
+		material->UpdateEnableLighting(false);
 		material->UpdateColor(glm::vec4(btn1->GetRenderColor(), 1.0f));
 		btn1->Render(main_camera);
 		material->UpdateColor(glm::vec4(btn2->GetRenderColor(), 1.0f));

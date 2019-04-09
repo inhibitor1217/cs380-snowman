@@ -5,15 +5,24 @@ in vec4 frag_color;
 in vec4 fragmentNormal;
 out vec4 output_color;
 
+uniform float enable_lighting;
+
 void main()
 {
 	const float ambient = 0.1;
 
-	vec3 tolight = normalize(vec3(10.0f) - fragmentPosition.xyz);
-	vec3 normal = normalize(fragmentNormal.xyz);
+	if (enable_lighting > 0.5)
+	{
+		vec3 tolight = normalize(vec3(10.0f) - fragmentPosition.xyz);
+		vec3 normal = normalize(fragmentNormal.xyz);
 
-	float diffuse = max(ambient, dot(normal, tolight));
-	vec4 intensity = frag_color * diffuse;
+		float diffuse = max(ambient, dot(normal, tolight));
+		vec4 intensity = frag_color * diffuse;
 
-	output_color = intensity;
+		output_color = intensity;
+	}
+	else
+	{
+		output_color = frag_color;
+	}
 }
