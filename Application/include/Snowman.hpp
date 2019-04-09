@@ -8,12 +8,19 @@
 class Snowman
 {
 private:
+	Engine::RenderObject *b_base;
+	Engine::RenderObject *b_torso;
+	Engine::RenderObject *b_head;
+
+	Engine::RenderObject *base;
+	Engine::RenderObject *torso;
+	Engine::RenderObject *head;
 
 public:
-    Snowman();
+    Snowman(Engine::Mesh *sphereMesh, Engine::Material *material);
     ~Snowman();
-	PickableObject* body;
-	PickableObject* head;
-	void rotate_head();
-	void rotate_body();
+
+	Engine::RenderObject *GetRootObject() { return b_torso; }
+
+	void Render(Engine::Camera *cam);
 };

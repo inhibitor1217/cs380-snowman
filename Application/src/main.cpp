@@ -24,6 +24,7 @@
 #include <picking.hpp>
 #include <PickableObject.hpp>
 #include <Snowman.hpp>
+#include <Clothes.hpp>
 #include <UIObject.hpp>
 #include <UISelectableObject.hpp>
 #include <UIButton.hpp>
@@ -32,11 +33,16 @@
 #define _USE_MATH_DEFINES
 constexpr float PI = 3.1415926f;
 
+float randf(float min, float max)
+{
+	return min + (max - min) * (float)rand() / 32768.0f;
+}
+
 GLFWwindow* g_window;
-float g_window_width = 1920.0f;
-float g_window_height = 1440.0f;
-int g_framebuffer_width = 1920;
-int g_framebuffer_height = 1440;
+float g_window_width = 1024.0f;
+float g_window_height = 768.0f;
+int g_framebuffer_width = 1024;
+int g_framebuffer_height = 768;
 
 /* Static variables for handling camera rotation. */
 static bool mode_drag = false;
@@ -154,6 +160,8 @@ static void KeyboardCallback(GLFWwindow* a_window, int a_key, int a_scancode, in
 
 int main(int argc, char** argv)
 {
+	srand(time(NULL));
+
     // Initialize GLFW library
     if (!glfwInit())
     {
@@ -219,7 +227,7 @@ int main(int argc, char** argv)
 	Engine::Mesh *squareMesh = new Engine::Mesh();
 	geometry.GenerateSquare(squareMesh);
 	Engine::Mesh *sphereMesh = new Engine::Mesh();
-	geometry.GenerateIcosphere(sphereMesh, 3);
+	geometry.GenerateIcosphere(sphereMesh, 4);
 
 	DefaultMaterial *material = new DefaultMaterial();
 	material->CreateMaterial();
@@ -230,28 +238,15 @@ int main(int argc, char** argv)
 	Engine::RenderObject *terrainObject = new Engine::RenderObject(squareMesh, material);
 	terrainObject->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
 
-	// Create skeletons for snowman
-	Engine::RenderObject *b_snowmanBaseObject = new Engine::RenderObject(nullptr, nullptr);
-	b_snowmanBaseObject->SetPosition(glm::vec3(0.0f, 0.0f, 0.5f));
-	Engine::RenderObject *b_snowmanTorsoObject = new Engine::RenderObject(nullptr, nullptr);
-	b_snowmanTorsoObject->AddParent(b_snowmanBaseObject);
-	b_snowmanTorsoObject->SetPosition(glm::vec3(0.0f, 0.0f, 1.4f));
-	Engine::RenderObject *b_snowmanHeadObject = new Engine::RenderObject(nullptr, nullptr);
-	b_snowmanHeadObject->AddParent(b_snowmanTorsoObject);
-	b_snowmanHeadObject->SetPosition(glm::vec3(0.0f, 0.0f, 1.2f));
-
 	// Create actual components and attach them to skeleton
-	Engine::RenderObject *snowmanBaseObject = new Engine::RenderObject(sphereMesh, material);
-	snowmanBaseObject->AddParent(b_snowmanBaseObject);
-	Engine::RenderObject *snowmanTorsoObject = new Engine::RenderObject(sphereMesh, material);
-	snowmanTorsoObject->AddParent(b_snowmanTorsoObject);
-	snowmanTorsoObject->SetScale(glm::vec3(0.8f, 0.8f, 0.8f));
-	Engine::RenderObject *snowmanHeadObject = new Engine::RenderObject(sphereMesh, material);
-	snowmanHeadObject->AddParent(b_snowmanHeadObject);
-	snowmanHeadObject->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
+	Snowman *snowman = new Snowman(sphereMesh, material);
+
+	// Create customizable clothes
+	Clothes *clothes = new Clothes(geometry, material);
+	clothes->hat.root->SetPosition(glm::vec3(0.0f, 0.0f, 4.1f));
 
 	// Set camera focus
-	cameraTargetObject->SetPosition(b_snowmanTorsoObject->GetPosition());
+	cameraTargetObject->SetPosition(snowman->GetRootObject()->GetPosition());
 	cameraTargetObject->SetOrientation(glm::rotate(glm::mat4(1.0f), 0.5f * PI, glm::vec3(1.0f, 0.0f, 0.0f)));
 	camera_rot_x = 0.5f * PI;
 
@@ -337,7 +332,7 @@ int main(int argc, char** argv)
 		
         // Drawing object again
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClearColor((GLclampf) 0.0f, (GLclampf) 0.0f, (GLclampf) 0.0f, (GLclampf) 0.0f);
+		glClearColor((GLclampf) 0xBD / 255.0f, (GLclampf) 0xEC / 255.0f, (GLclampf) 0xF3 / 255.0f, (GLclampf) 1.0f);
 
 		// Clear frame buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -345,9 +340,8 @@ int main(int argc, char** argv)
 		// Render Regular objects
 		material->UpdateEnableLighting(true);
 		material->UpdateColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-		snowmanBaseObject->Render(main_camera);
-		snowmanTorsoObject->Render(main_camera);
-		snowmanHeadObject->Render(main_camera);
+		snowman->Render(main_camera);
+		clothes->RenderHat(main_camera, material);
 
 		material->UpdateColor(glm::vec4(0x68 / 255.0f, 0x41 / 255.0f, 0x32 / 255.0f, 1.0f));
 		terrainObject->Render(main_camera);
@@ -375,6 +369,8 @@ int main(int argc, char** argv)
 	
 	g_renderObjects.clear();
 	uiObjects.clear();
+
+	delete snowman;
 
     glfwTerminate();
     return 0;

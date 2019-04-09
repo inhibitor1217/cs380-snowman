@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 constexpr float PI = 3.1415926f;
+extern float randf(float, float);
 
 Geometry::Geometry()
 {
@@ -194,7 +195,8 @@ void Geometry::GenerateIcosphere(Engine::Mesh *mesh, int resolution_level)
 	for (auto v : faces)
 	{
 		mesh->AddVertexData(glm::vec4(v, 1.0f)); // position
-		mesh->AddVertexData(glm::vec4(v, 1.0f)); // normal
+		mesh->AddVertexData(glm::vec4(v, 1.0f) 
+			+ glm::vec4(randf(-0.03f, 0.03f), randf(-0.03f, 0.03f), randf(-0.03f, 0.03f), 0.0f)); // normal
 	}
 
 	mesh->SetNumElements(faces.size());
