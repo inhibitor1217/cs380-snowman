@@ -30,6 +30,7 @@
 #include <UIToggler.hpp>
 
 #define _USE_MATH_DEFINES
+constexpr float PI = 3.1415926f;
 
 GLFWwindow* g_window;
 float g_window_width = 1920.0f;
@@ -46,8 +47,22 @@ static float ui_distance = 1.0f;
 static bool cursor_initialized = false;
 static float cursor_x = 0.0f, cursor_y = 0.0f, cursor_prev_x = 0.0f, cursor_prev_y = 0.0f;
 
+/* Static list containing the UI components. */
+std::vector<UIObject *> uiObjects;
+
+/* Some constants regarding the inventory. */
+constexpr int INVENTORY_WIDTH = 3;
+constexpr int INVENTORY_HEIGHT = 8;
+constexpr float INVENTORY_BLOCK_SIZE = 0.08f;
+constexpr float INVENTORY_BLOCK_MARGIN = 0.016f;
+constexpr float INVENTORY_POSITION_X = 0.60f;
+constexpr float INVENTORY_POSITION_Y = 0.17f;
+constexpr float INVENTORY_LAYER_Z = 0.002f;
+
 /* Sensitivity of mouse dragging. */
 constexpr float DRAG_SPEED = 0.002f;
+static float camera_rot_x = 0.0f;
+static float camera_rot_z = 0.0f;
 
 /* Static variables for controlling UI picking system. */
 static int press_target = 0;
@@ -60,7 +75,7 @@ Engine::RenderObject *g_UIRootObject = nullptr;
 /* Global map containing all render objects with indices. */
 std::map<int, Engine::RenderObject *> g_renderObjects;
 
-// TODO: Fill up GLFW mouse button callback function
+
 static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a_mods)
 {
 	double xpos, ypos;
@@ -87,15 +102,15 @@ static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action
 			if (a_action == GLFW_PRESS)
 			{
 				press_target = target;
-				if (g_renderObjects[press_target])
+				if (g_renderObjects.find(press_target) != g_renderObjects.end())
 					g_renderObjects[press_target]->onPress();
 
 			}
 			else if (a_action == GLFW_RELEASE)
 			{
-				if (g_renderObjects[press_target])
+				if (g_renderObjects.find(press_target) != g_renderObjects.end())
 					g_renderObjects[press_target]->onRelease();
-				if (target == press_target && g_renderObjects[press_target])
+				if (target == press_target && g_renderObjects.find(press_target) != g_renderObjects.end())
 					g_renderObjects[press_target]->onClick();
 				press_target = 0;
 			}
@@ -115,9 +130,9 @@ static void CursorPosCallback(GLFWwindow* a_window, double a_xpos, double a_ypos
 		/* Manage hovering system. */
 		if (!mode_drag)
 		{
-			if (g_renderObjects[hover_target])
+			if (g_renderObjects.find(hover_target) != g_renderObjects.end())
 				g_renderObjects[hover_target]->onExit();
-			if (g_renderObjects[new_target])
+			if (g_renderObjects.find(new_target) != g_renderObjects.end())
 				g_renderObjects[new_target]->onEnter();
 		}
 	}
@@ -186,6 +201,7 @@ int main(int argc, char** argv)
     pickingInitialize(g_framebuffer_width, g_framebuffer_width);
 
 	g_renderObjects = std::map<int, Engine::RenderObject *>();
+	uiObjects = std::vector<UIObject *>();
 
 	// Initialize Camera
     Engine::Camera* main_camera = new Engine::Camera();
@@ -202,29 +218,71 @@ int main(int argc, char** argv)
 
 	Engine::Mesh *squareMesh = new Engine::Mesh();
 	geometry.GenerateSquare(squareMesh);
-	Engine::Mesh *cubeMesh = new Engine::Mesh();
-	geometry.GenerateCube(cubeMesh);
+	Engine::Mesh *sphereMesh = new Engine::Mesh();
+	geometry.GenerateIcosphere(sphereMesh, 3);
 
 	DefaultMaterial *material = new DefaultMaterial();
 	material->CreateMaterial();
 	PickingMaterial *pickingMaterial = new PickingMaterial();
 	pickingMaterial->CreateMaterial();
 
-	Engine::RenderObject *renderObject = new Engine::RenderObject(cubeMesh, material);
+	// Temporary terrain
+	Engine::RenderObject *terrainObject = new Engine::RenderObject(squareMesh, material);
+	terrainObject->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
+
+	// Create skeletons for snowman
+	Engine::RenderObject *b_snowmanBaseObject = new Engine::RenderObject(nullptr, nullptr);
+	b_snowmanBaseObject->SetPosition(glm::vec3(0.0f, 0.0f, 0.5f));
+	Engine::RenderObject *b_snowmanTorsoObject = new Engine::RenderObject(nullptr, nullptr);
+	b_snowmanTorsoObject->AddParent(b_snowmanBaseObject);
+	b_snowmanTorsoObject->SetPosition(glm::vec3(0.0f, 0.0f, 1.4f));
+	Engine::RenderObject *b_snowmanHeadObject = new Engine::RenderObject(nullptr, nullptr);
+	b_snowmanHeadObject->AddParent(b_snowmanTorsoObject);
+	b_snowmanHeadObject->SetPosition(glm::vec3(0.0f, 0.0f, 1.2f));
+
+	// Create actual components and attach them to skeleton
+	Engine::RenderObject *snowmanBaseObject = new Engine::RenderObject(sphereMesh, material);
+	snowmanBaseObject->AddParent(b_snowmanBaseObject);
+	Engine::RenderObject *snowmanTorsoObject = new Engine::RenderObject(sphereMesh, material);
+	snowmanTorsoObject->AddParent(b_snowmanTorsoObject);
+	snowmanTorsoObject->SetScale(glm::vec3(0.8f, 0.8f, 0.8f));
+	Engine::RenderObject *snowmanHeadObject = new Engine::RenderObject(sphereMesh, material);
+	snowmanHeadObject->AddParent(b_snowmanHeadObject);
+	snowmanHeadObject->SetScale(glm::vec3(0.6f, 0.6f, 0.6f));
+
+	// Set camera focus
+	cameraTargetObject->SetPosition(b_snowmanTorsoObject->GetPosition());
+	cameraTargetObject->SetOrientation(glm::rotate(glm::mat4(1.0f), 0.5f * PI, glm::vec3(1.0f, 0.0f, 0.0f)));
+	camera_rot_x = 0.5f * PI;
 
 	// Create UI objects
-	UIButton *btn1 = new UIButton(squareMesh, material);
-	btn1->SetIndex(1);
-	btn1->SetPickingMat(pickingMaterial);
-	btn1->SetPosition(glm::vec3(-0.1f, -0.5f, camera_distance - ui_distance));
-	btn1->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
-	
-	UIToggler *btn2 = new UIToggler(squareMesh, material);
-	btn2->SetIndex(2);
-	btn2->SetPickingMat(pickingMaterial);
-	btn2->SetPosition(glm::vec3(0.1f, -0.5f, camera_distance - ui_distance));
-	btn2->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
-	
+	UIObject *inventoryWindowObject = new UIObject(squareMesh, material);
+	inventoryWindowObject->SetPosition(glm::vec3(INVENTORY_POSITION_X, INVENTORY_POSITION_Y, camera_distance - ui_distance));
+	inventoryWindowObject->SetScale(glm::vec3(
+		INVENTORY_WIDTH * INVENTORY_BLOCK_SIZE + (INVENTORY_WIDTH + 1) * INVENTORY_BLOCK_MARGIN, 
+		INVENTORY_HEIGHT * INVENTORY_BLOCK_SIZE + (INVENTORY_HEIGHT + 1) * INVENTORY_BLOCK_MARGIN,
+		1.0f));
+	inventoryWindowObject->SetColor(glm::vec3(0.2f, 0.2f, 0.2f));
+	uiObjects.push_back(inventoryWindowObject);
+
+	for (int x = 0; x < INVENTORY_WIDTH; x++)
+	{
+		for (int y = 0; y < INVENTORY_HEIGHT; y++)
+		{
+			UIToggler *inventoryObject = new UIToggler(squareMesh, material);
+			inventoryObject->SetPosition(glm::vec3(
+				INVENTORY_POSITION_X + ((float)x - 0.5f * (float)(INVENTORY_WIDTH - 1)) * (INVENTORY_BLOCK_SIZE + INVENTORY_BLOCK_MARGIN),
+				INVENTORY_POSITION_Y + ((float)y - 0.5f * (float)(INVENTORY_HEIGHT - 1)) * (INVENTORY_BLOCK_SIZE + INVENTORY_BLOCK_MARGIN),
+				camera_distance - ui_distance + INVENTORY_LAYER_Z
+			));
+			inventoryObject->SetScale(glm::vec3(INVENTORY_BLOCK_SIZE, INVENTORY_BLOCK_SIZE, 1.0f));
+			inventoryObject->SetIndex(y * INVENTORY_WIDTH + x + 1);
+			inventoryObject->SetPickingMat(pickingMaterial);
+			inventoryObject->SetColor(glm::vec3(0.8f, 0.8f, 0.8f));
+			uiObjects.push_back(inventoryObject);
+		}
+	}
+
     float prev_time = 0;
 
     /* Loop until the user closes the window */
@@ -246,12 +304,18 @@ int main(int argc, char** argv)
 		 * Then, by controlling the rotation of the dummy object, the camera's position and rotation are adjusted. */
 		if (cursor_initialized && mode_drag)
 		{
-			cameraTargetObject->SetOrientation(
-				glm::rotate(cameraTargetObject->GetOrientation(), -DRAG_SPEED * input_cursor_x, glm::vec3(0.0f, 1.0f, 0.0f))
-			);
-			cameraTargetObject->SetOrientation(
-				glm::rotate(cameraTargetObject->GetOrientation(), -DRAG_SPEED * input_cursor_y, glm::vec3(1.0f, 0.0f, 0.0f))
-			);
+			camera_rot_z += -DRAG_SPEED * input_cursor_x;
+			camera_rot_x += -DRAG_SPEED * input_cursor_y;
+			if (camera_rot_x > 0.5f * PI)
+				camera_rot_x = 0.5f * PI;
+			if (camera_rot_x < 0)
+				camera_rot_x = 0;
+
+			glm::mat4 orientation = glm::mat4(1.0f);
+			orientation = glm::rotate(orientation, camera_rot_z, glm::vec3(0.0f, 0.0f, 1.0f));
+			orientation = glm::rotate(orientation, camera_rot_x, glm::vec3(1.0f, 0.0f, 0.0f));
+
+			cameraTargetObject->SetOrientation(orientation);
 		}
 
         // this is for picking the object using mouse interaction
@@ -281,14 +345,20 @@ int main(int argc, char** argv)
 		// Render Regular objects
 		material->UpdateEnableLighting(true);
 		material->UpdateColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-		renderObject->Render(main_camera);
+		snowmanBaseObject->Render(main_camera);
+		snowmanTorsoObject->Render(main_camera);
+		snowmanHeadObject->Render(main_camera);
+
+		material->UpdateColor(glm::vec4(0x68 / 255.0f, 0x41 / 255.0f, 0x32 / 255.0f, 1.0f));
+		terrainObject->Render(main_camera);
 
 		// Render UIs
 		material->UpdateEnableLighting(false);
-		material->UpdateColor(glm::vec4(btn1->GetRenderColor(), 1.0f));
-		btn1->Render(main_camera);
-		material->UpdateColor(glm::vec4(btn2->GetRenderColor(), 1.0f));
-		btn2->Render(main_camera);
+		for (auto obj : uiObjects)
+		{
+			material->UpdateColor(glm::vec4(obj->GetRenderColor(), 1.0f));
+			obj->Render(main_camera);
+		}
 		
 		/* Swap front and back buffers */
         glfwSwapBuffers(g_window);
@@ -304,6 +374,7 @@ int main(int argc, char** argv)
 	deletePickingResources();
 	
 	g_renderObjects.clear();
+	uiObjects.clear();
 
     glfwTerminate();
     return 0;

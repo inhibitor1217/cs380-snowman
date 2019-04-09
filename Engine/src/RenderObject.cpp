@@ -13,6 +13,12 @@ namespace Engine
     {
 	}
 
+	RenderObject::~RenderObject()
+	{
+		if (g_renderObjects.find(_index) != g_renderObjects.end())
+			g_renderObjects.erase(_index);
+	}
+
     void RenderObject::ChangeMaterial(Material* mat)
     {
         _material = mat;

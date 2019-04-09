@@ -38,10 +38,11 @@ namespace Engine
     public:
         RenderObject();
         RenderObject(Mesh* mesh, Material* material);
-
+		~RenderObject();
 
 		virtual void ChangeMaterial(Material* mat);
         virtual void Render(Camera* cam);
+		virtual void RenderPicking(Camera *cam) {}
         virtual void SetMesh(Mesh* mesh) { _mesh = mesh; }
         virtual void SetMaterial(Material* material) { _material = material; }
         virtual glm::vec3 GetPosition() { return _position; }

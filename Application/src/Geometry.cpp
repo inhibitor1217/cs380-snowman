@@ -382,10 +382,10 @@ void Geometry::GenerateSquare(Engine::Mesh *mesh)
 	mesh->AddAttribute(4); // normal
 
 	glm::vec3 positions[] = {
-		glm::vec3(-1.0f, 1.0f, 0.0f),
-		glm::vec3(-1.0f, -1.0f, 0.0f),
-		glm::vec3(1.0f, 1.0f, 0.0f),
-		glm::vec3(1.0f, -1.0f, 0.0f)
+		glm::vec3(-0.5f, 0.5f, 0.0f),
+		glm::vec3(-0.5f, -0.5f, 0.0f),
+		glm::vec3(0.5f, 0.5f, 0.0f),
+		glm::vec3(0.5f, -0.5f, 0.0f)
 	};
 
 	int indices[] = { 0, 1, 3, 0, 3, 2 };
