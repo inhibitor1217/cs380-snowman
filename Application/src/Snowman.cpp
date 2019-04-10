@@ -6,6 +6,8 @@ Snowman::Snowman(Geometry geometry, Engine::Material *material)
 {
 	Engine::Mesh *sphereMesh = new Engine::Mesh();
 	geometry.GenerateIcosphere(sphereMesh, 3);
+	Engine::Mesh *cylinderMesh = new Engine::Mesh();
+	geometry.GenerateCylinder(cylinderMesh, 12, 0.2f, 1.0f);
 
 	b_base = new Engine::RenderObject(nullptr, nullptr);
 	b_base->SetPosition(glm::vec3(0.0f, 0.0f, 0.5f));
@@ -27,6 +29,29 @@ Snowman::Snowman(Geometry geometry, Engine::Material *material)
 	b_headAccessory->SetOrientation(glm::rotate(
 		glm::mat4(1.0f), 0.1f, glm::vec3(1.0f, -1.0f, 0.0f)
 	));
+	b_leftShoulder = new Engine::RenderObject(nullptr, nullptr);
+	b_leftShoulder->AddParent(b_torso);
+	b_leftShoulder->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), 1.2f, glm::vec3(0.0f, 1.0f, -0.1f)
+	));
+	b_leftArm = new Engine::RenderObject(nullptr, nullptr);
+	b_leftArm->AddParent(b_leftShoulder);
+	b_leftArm->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+	b_leftHand = new Engine::RenderObject(nullptr, nullptr);
+	b_leftHand->AddParent(b_leftArm);
+	b_leftHand->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+	b_rightShoulder = new Engine::RenderObject(nullptr, nullptr);
+	b_rightShoulder->AddParent(b_torso);
+	b_rightShoulder->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -1.4f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
+	b_rightArm = new Engine::RenderObject(nullptr, nullptr);
+	b_rightArm->AddParent(b_rightShoulder);
+	b_rightArm->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+	b_rightHand = new Engine::RenderObject(nullptr, nullptr);
+	b_rightHand->AddParent(b_rightArm);
+	b_rightHand->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+
 
 	base = new Engine::RenderObject(sphereMesh, material);
 	base->AddParent(b_base);
@@ -44,7 +69,6 @@ Snowman::Snowman(Geometry geometry, Engine::Material *material)
 	rightEye->AddParent(b_head);
 	rightEye->SetScale(glm::vec3(0.05f, 0.05f, 0.08f));
 	rightEye->SetPosition(glm::vec3(-0.2f, -0.55f, 0.1f));
-
 	button1 = new Engine::RenderObject(sphereMesh, material);
 	button1->AddParent(b_torso);
 	button1->SetScale(glm::vec3(0.06f, 0.06f, 0.06f));
@@ -65,6 +89,42 @@ Snowman::Snowman(Geometry geometry, Engine::Material *material)
 	button5->AddParent(b_base);
 	button5->SetScale(glm::vec3(0.07f, 0.07f, 0.07f));
 	button5->SetPosition(glm::vec3(0.0f, -1.0f, 0.0f));
+	leftArm = new Engine::RenderObject(cylinderMesh, material);
+	leftArm->AddParent(b_leftArm);
+	leftArm->SetScale(glm::vec3(0.06f, 0.06f, 1.0f));
+	leftArmBranch1 = new Engine::RenderObject(cylinderMesh, material);
+	leftArmBranch1->AddParent(b_leftArm);
+	leftArmBranch1->SetPosition(glm::vec3(0.0f, 0.0f, 0.5f)
+		+ glm::vec3(glm::rotate(
+			glm::mat4(1.0f), 1.2f, glm::vec3(1.0f, 1.0f, 1.0f)
+		) * glm::vec4(0.0f, 0.0f, 0.24f, 1.0f)));
+	leftArmBranch1->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), 1.2f, glm::vec3(1.0f, 1.0f, 1.0f)
+	));
+	leftArmBranch1->SetScale(glm::vec3(0.02f, 0.02f, 0.24f));
+	leftArmBranch2 = new Engine::RenderObject(cylinderMesh, material);
+	leftArmBranch2->AddParent(b_leftArm);
+	leftArmBranch2->SetPosition(glm::vec3(0.0f, 0.0f, 0.7f)
+		+ glm::vec3(glm::rotate(
+			glm::mat4(1.0f), 0.7f, glm::vec3(-2.0f, -1.0f, -0.5f)
+		) * glm::vec4(0.0f, 0.0f, 0.12f, 1.0f)));
+	leftArmBranch2->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), 0.7f, glm::vec3(-2.0f, -1.0f, -0.5f)
+	));
+	leftArmBranch2->SetScale(glm::vec3(0.01f, 0.01f, 0.12f));
+	rightArm = new Engine::RenderObject(cylinderMesh, material);
+	rightArm->AddParent(b_rightArm);
+	rightArm->SetScale(glm::vec3(0.06f, 0.06f, 1.0f));
+	rightArmBranch1 = new Engine::RenderObject(cylinderMesh, material);
+	rightArmBranch1->AddParent(b_rightArm);
+	rightArmBranch1->SetPosition(glm::vec3(0.0f, 0.0f, 0.7f)
+			+ glm::vec3(glm::rotate(
+				glm::mat4(1.0f), 0.7f, glm::vec3(-1.0f, 1.0f, -0.5f)
+			) * glm::vec4(0.0f, 0.0f, 0.12f, 1.0f)));
+	rightArmBranch1->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), 0.7f, glm::vec3(-1.0f, 1.0f, -0.5f)
+	));
+	rightArmBranch1->SetScale(glm::vec3(0.01f, 0.01f, 0.12f));
 }
 
 void Snowman::Render(Engine::Camera *cam, DefaultMaterial *material)
@@ -81,6 +141,12 @@ void Snowman::Render(Engine::Camera *cam, DefaultMaterial *material)
 	button3->Render(cam);
 	button4->Render(cam);
 	button5->Render(cam);
+	material->UpdateColor(glm::vec4(0x60 / 255.0f, 0x41 / 255.0f, 0x2B / 255.0f, 0.1f));
+	leftArm->Render(cam);
+	leftArmBranch1->Render(cam);
+	leftArmBranch2->Render(cam);
+	rightArm->Render(cam);
+	rightArmBranch1->Render(cam);
 }
 
 void Snowman::SetHeadAccessory(Engine::RenderObject *obj)

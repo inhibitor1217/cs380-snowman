@@ -343,7 +343,7 @@ int main(int argc, char** argv)
 		clothes->RenderHat(main_camera, material);
 		clothes->RenderCarrotNose(main_camera, material);
 
-		material->UpdateColor(glm::vec4(0x68 / 255.0f, 0x41 / 255.0f, 0x32 / 255.0f, 1.0f));
+		material->UpdateColor(glm::vec4(0x9A / 255.0f, 0xAC / 255.0f, 0xB8 / 255.0f, 1.0f));
 		terrainObject->Render(main_camera);
 
 		// Render UIs

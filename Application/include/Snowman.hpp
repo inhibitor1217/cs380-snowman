@@ -15,6 +15,12 @@ private:
 	Engine::RenderObject *b_head;
 	Engine::RenderObject *b_nose;
 	Engine::RenderObject *b_headAccessory;
+	Engine::RenderObject *b_leftShoulder;
+	Engine::RenderObject *b_leftArm;
+	Engine::RenderObject *b_leftHand;
+	Engine::RenderObject *b_rightShoulder;
+	Engine::RenderObject *b_rightArm;
+	Engine::RenderObject *b_rightHand;
 
 	Engine::RenderObject *base;
 	Engine::RenderObject *torso;
@@ -22,9 +28,14 @@ private:
 	Engine::RenderObject *leftEye;
 	Engine::RenderObject *rightEye;
 	Engine::RenderObject *button1, *button2, *button3, *button4, *button5;
+	Engine::RenderObject *leftArm;
+	Engine::RenderObject *leftArmBranch1;
+	Engine::RenderObject *leftArmBranch2;
+	Engine::RenderObject *rightArm;
+	Engine::RenderObject *rightArmBranch1;
 
 	Engine::RenderObject *nose;
-	Engine::RenderObject *headAccessory = nullptr;
+	Engine::RenderObject *headAccessory;
 
 public:
     Snowman(Geometry geometry, Engine::Material *material);
