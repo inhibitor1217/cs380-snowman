@@ -15,6 +15,8 @@ Clothes::Clothes(Geometry geometry, Engine::Material *material)
 	geometry.GenerateCylinder(scarfMesh, 32, 0.9f, 1.1f);
 	Engine::Mesh *squareMesh = new Engine::Mesh();
 	geometry.GenerateSquare(squareMesh);
+	Engine::Mesh *cubeMesh = new Engine::Mesh();
+	geometry.GenerateCube(cubeMesh);
 
 	hat.root = new Engine::RenderObject(nullptr, nullptr);
 	hat.body = new Engine::RenderObject(hatMesh, material);
@@ -140,12 +142,103 @@ Clothes::Clothes(Geometry geometry, Engine::Material *material)
 	red_scarf_icon.edge2->SetScale(glm::vec3(0.022f, 0.01f, 0.05f));
 	red_scarf_icon.edge2->SetPosition(glm::vec3(0.0f, -0.01f, 0.001f));
 
+	glove_left.root = new Engine::RenderObject(nullptr, nullptr);
+	glove_left.hand = new Engine::RenderObject(cubeMesh, material);
+	glove_left.hand->AddParent(glove_left.root);
+	glove_left.hand->SetScale(glm::vec3(0.1f, 0.05f, 0.2f));
+	glove_left.wrist = new Engine::RenderObject(cubeMesh, material);
+	glove_left.wrist->AddParent(glove_left.root);
+	glove_left.wrist->SetScale(glm::vec3(0.11f, 0.06f, 0.06f));
+	glove_left.wrist->SetPosition(glm::vec3(0.0f, 0.0f, -0.15f));
+	glove_left.thumb = new Engine::RenderObject(cubeMesh, material);
+	glove_left.thumb->AddParent(glove_left.root);
+	glove_left.thumb->SetScale(glm::vec3(0.05f, 0.048f, 0.1f));
+	glove_left.thumb->SetPosition(glm::vec3(-0.1f, 0.0f, -0.05f));
+	glove_left.thumb->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -1.2f, glm::vec3(0.0f, 1.0f, 0.0f)
+	));
+
+	glove_right.root = new Engine::RenderObject(nullptr, nullptr);
+	glove_right.hand = new Engine::RenderObject(cubeMesh, material);
+	glove_right.hand->AddParent(glove_right.root);
+	glove_right.hand->SetScale(glm::vec3(0.1f, 0.05f, 0.2f));
+	glove_right.wrist = new Engine::RenderObject(cubeMesh, material);
+	glove_right.wrist->AddParent(glove_right.root);
+	glove_right.wrist->SetScale(glm::vec3(0.11f, 0.06f, 0.06f));
+	glove_right.wrist->SetPosition(glm::vec3(0.0f, 0.0f, -0.15f));
+	glove_right.thumb = new Engine::RenderObject(cubeMesh, material);
+	glove_right.thumb->AddParent(glove_right.root);
+	glove_right.thumb->SetScale(glm::vec3(0.05f, 0.048f, 0.1f));
+	glove_right.thumb->SetPosition(glm::vec3(0.1f, 0.0f, -0.05f));
+	glove_right.thumb->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), 1.2f, glm::vec3(0.0f, 1.0f, 0.0f)
+	));
+
+	green_glove_icon.root = new Engine::RenderObject(nullptr, nullptr);
+	green_glove_icon.root->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -0.5f * PI, glm::vec3(1.0f, 0.0f, 0.3f)
+	));
+	green_glove_icon.root->SetPosition(glm::vec3(0.0f, 0.0f, 0.01f));
+	green_glove_icon.hand = new Engine::RenderObject(cubeMesh, material);
+	green_glove_icon.hand->AddParent(green_glove_icon.root);
+	green_glove_icon.hand->SetScale(glm::vec3(0.015f, 0.0075f, 0.03f));
+	green_glove_icon.wrist = new Engine::RenderObject(cubeMesh, material);
+	green_glove_icon.wrist->AddParent(green_glove_icon.root);
+	green_glove_icon.wrist->SetScale(glm::vec3(0.016f, 0.009f, 0.009f));
+	green_glove_icon.wrist->SetPosition(glm::vec3(0.0f, 0.0f, -0.023f));
+	green_glove_icon.thumb = new Engine::RenderObject(cubeMesh, material);
+	green_glove_icon.thumb->AddParent(green_glove_icon.root);
+	green_glove_icon.thumb->SetScale(glm::vec3(0.0075f, 0.0075f, 0.015f));
+	green_glove_icon.thumb->SetPosition(glm::vec3(-0.015f, 0.0f, -0.0075f));
+	green_glove_icon.thumb->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -1.2f, glm::vec3(0.0f, 1.0f, 0.0f)
+	));
+
+	red_glove_icon.root = new Engine::RenderObject(nullptr, nullptr);
+	red_glove_icon.root->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -0.5f * PI, glm::vec3(1.0f, 0.0f, 0.3f)
+	));
+	red_glove_icon.root->SetPosition(glm::vec3(0.0f, 0.0f, 0.01f));
+	red_glove_icon.hand = new Engine::RenderObject(cubeMesh, material);
+	red_glove_icon.hand->AddParent(red_glove_icon.root);
+	red_glove_icon.hand->SetScale(glm::vec3(0.015f, 0.0075f, 0.03f));
+	red_glove_icon.wrist = new Engine::RenderObject(cubeMesh, material);
+	red_glove_icon.wrist->AddParent(red_glove_icon.root);
+	red_glove_icon.wrist->SetScale(glm::vec3(0.016f, 0.009f, 0.009f));
+	red_glove_icon.wrist->SetPosition(glm::vec3(0.0f, 0.0f, -0.023f));
+	red_glove_icon.thumb = new Engine::RenderObject(cubeMesh, material);
+	red_glove_icon.thumb->AddParent(red_glove_icon.root);
+	red_glove_icon.thumb->SetScale(glm::vec3(0.0075f, 0.0075f, 0.015f));
+	red_glove_icon.thumb->SetPosition(glm::vec3(-0.015f, 0.0f, -0.0075f));
+	red_glove_icon.thumb->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -1.2f, glm::vec3(0.0f, 1.0f, 0.0f)
+	));
 }
 
 void Clothes::RenderObject(Engine::Camera *camera, DefaultMaterial *material, int index)
 {
 	switch (index)
 	{
+	case 6:
+		material->UpdateColor(glm::vec4(0x14 / 255.0f, 0x6B / 255.0f, 0x3A / 255.0f, 1.0f));
+		glove_left.hand->Render(camera);
+		glove_left.thumb->Render(camera);
+		glove_right.hand->Render(camera);
+		glove_right.thumb->Render(camera);
+		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xFF / 255.0f, 0xFF / 255.0f, 1.0f));
+		glove_left.wrist->Render(camera);
+		glove_right.wrist->Render(camera);
+		break;
+	case 7:
+		material->UpdateColor(glm::vec4(0xE5 / 255.0f, 0x00 / 255.0f, 0x22 / 255.0f, 1.0f));
+		glove_left.hand->Render(camera);
+		glove_left.thumb->Render(camera);
+		glove_right.hand->Render(camera);
+		glove_right.thumb->Render(camera);
+		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xFF / 255.0f, 0xFF / 255.0f, 1.0f));
+		glove_left.wrist->Render(camera);
+		glove_right.wrist->Render(camera);
+		break;
 	case 12:
 		material->UpdateColor(glm::vec4(0x14 / 255.0f, 0x6B / 255.0f, 0x3A / 255.0f, 1.0f));
 		scarf.body->Render(camera);
@@ -184,6 +277,19 @@ void Clothes::RenderUIObject(Engine::Camera *camera, DefaultMaterial *material, 
 {
 	switch (index)
 	{
+	case 6:
+		material->UpdateColor(glm::vec4(0x14 / 255.0f, 0x6B / 255.0f, 0x3A / 255.0f, 1.0f));
+		green_glove_icon.hand->Render(camera);
+		green_glove_icon.thumb->Render(camera);
+		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xFF / 255.0f, 0xFF / 255.0f, 1.0f));
+		green_glove_icon.wrist->Render(camera);
+	case 7:
+		material->UpdateColor(glm::vec4(0xE5 / 255.0f, 0x00 / 255.0f, 0x22 / 255.0f, 1.0f));
+		red_glove_icon.hand->Render(camera);
+		red_glove_icon.thumb->Render(camera);
+		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xFF / 255.0f, 0xFF / 255.0f, 1.0f));
+		red_glove_icon.wrist->Render(camera);
+
 	case 12:
 		material->UpdateColor(glm::vec4(0x14 / 255.0f, 0x6B / 255.0f, 0x3A / 255.0f, 1.0f));
 		green_scarf_icon.body->Render(camera);

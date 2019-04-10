@@ -155,17 +155,22 @@ void Snowman::Render(Engine::Camera *cam, DefaultMaterial *material)
 void Snowman::SetHeadAccessory(Engine::RenderObject *obj)
 {
 	obj->AddParent(b_headAccessory);
-	headAccessory = obj;
 }
 
 void Snowman::SetNose(Engine::RenderObject *obj)
 {
 	obj->AddParent(b_nose);
-	nose = obj;
 }
 
 void Snowman::SetTorsoAccessory(Engine::RenderObject *obj)
 {
 	obj->AddParent(b_torsoAccessory);
-	torsoAccessory = obj;
+}
+
+void Snowman::SetHandAccessory(Engine::RenderObject *obj_left, Engine::RenderObject *obj_right)
+{
+	if (obj_left != nullptr)
+		obj_left->AddParent(b_leftHand);
+	if (obj_right != nullptr)
+		obj_right->AddParent(b_rightHand);
 }

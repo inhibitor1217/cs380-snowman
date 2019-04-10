@@ -56,11 +56,13 @@ static float cursor_x = 0.0f, cursor_y = 0.0f, cursor_prev_x = 0.0f, cursor_prev
 /* Static list containing the UI components. */
 static std::vector<UIObject *> uiObjects;
 static UIToggler *inventoryTogglerObjects[24];
+static int inventory_size = 6;
+static int inventory_visible[] = { 6, 7, 12, 13, 15, 21 };
 static int inventory_conflicts[4][6] = {
+	{6, 7},
 	{12, 13},
-	{},
-	{},
-	{}
+	{15},
+	{21}
 };
 
 /* Some constants regarding the inventory. */
@@ -133,7 +135,8 @@ static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action
 						std::vector<int> selected;
 						for (int j = 0; j < 6; j++)
 						{
-							if (inventoryTogglerObjects[inventory_conflicts[i][j]]->GetSelected())
+							if (inventoryTogglerObjects[inventory_conflicts[i][j]]
+								&& inventoryTogglerObjects[inventory_conflicts[i][j]]->GetSelected())
 								selected.push_back(inventory_conflicts[i][j]);
 						}
 						if (selected.size() > 1 && std::find(selected.begin(), selected.end(), press_target - 1) != selected.end())
@@ -280,37 +283,43 @@ int main(int argc, char** argv)
 	inventoryWindowObject->SetColor(glm::vec3(0.2f, 0.2f, 0.2f));
 	uiObjects.push_back(inventoryWindowObject);
 
-	for (int x = 0; x < INVENTORY_WIDTH; x++)
+	for (int i = 0; i < inventory_size; i++)
 	{
-		for (int y = 0; y < INVENTORY_HEIGHT; y++)
-		{
-			UIToggler *inventoryObject = new UIToggler(squareMesh, material);
-			inventoryObject->SetPosition(glm::vec3(
-				INVENTORY_POSITION_X + ((float)x - 0.5f * (float)(INVENTORY_WIDTH - 1)) * (INVENTORY_BLOCK_SIZE + INVENTORY_BLOCK_MARGIN),
-				INVENTORY_POSITION_Y + ((float)y - 0.5f * (float)(INVENTORY_HEIGHT - 1)) * (INVENTORY_BLOCK_SIZE + INVENTORY_BLOCK_MARGIN),
-				camera_distance - ui_distance + INVENTORY_LAYER_Z
-			));
-			inventoryObject->SetScale(glm::vec3(INVENTORY_BLOCK_SIZE, INVENTORY_BLOCK_SIZE, 1.0f));
-			inventoryObject->SetIndex(y * INVENTORY_WIDTH + x + 1);
-			inventoryObject->SetPickingMat(pickingMaterial);
-			inventoryObject->SetColor(glm::vec3(0.8f, 0.8f, 0.8f));
-			inventoryObject->SetSelectedColor(glm::vec3(1.0f, 1.0f, 0.3f));
-			uiObjects.push_back(inventoryObject);
-			inventoryTogglerObjects[y * INVENTORY_WIDTH + x] = inventoryObject;
-		}
+		int x = inventory_visible[i] % INVENTORY_WIDTH;
+		int y = inventory_visible[i] / INVENTORY_WIDTH;
+
+		UIToggler *inventoryObject = new UIToggler(squareMesh, material);
+		inventoryObject->SetPosition(glm::vec3(
+			INVENTORY_POSITION_X + ((float)x - 0.5f * (float)(INVENTORY_WIDTH - 1)) * (INVENTORY_BLOCK_SIZE + INVENTORY_BLOCK_MARGIN),
+			INVENTORY_POSITION_Y + ((float)y - 0.5f * (float)(INVENTORY_HEIGHT - 1)) * (INVENTORY_BLOCK_SIZE + INVENTORY_BLOCK_MARGIN),
+			camera_distance - ui_distance + INVENTORY_LAYER_Z
+		));
+		inventoryObject->SetScale(glm::vec3(INVENTORY_BLOCK_SIZE, INVENTORY_BLOCK_SIZE, 1.0f));
+		inventoryObject->SetIndex(inventory_visible[i] + 1);
+		inventoryObject->SetPickingMat(pickingMaterial);
+		inventoryObject->SetColor(glm::vec3(0.8f, 0.8f, 0.8f));
+		inventoryObject->SetSelectedColor(glm::vec3(1.0f, 1.0f, 0.3f));
+		uiObjects.push_back(inventoryObject);
+		inventoryTogglerObjects[inventory_visible[i]] = inventoryObject;
 	}
+
+	// connect icons with UI togglers
+	clothes->green_glove_icon.root->AddParent(g_renderObjects[7]);
+	clothes->red_glove_icon.root->AddParent(g_renderObjects[8]);
 	clothes->green_scarf_icon.root->AddParent(g_renderObjects[13]);
 	clothes->red_scarf_icon.root->AddParent(g_renderObjects[14]);
 	clothes->carrot_icon.root->AddParent(g_renderObjects[16]);
 	clothes->hat_icon.root->AddParent(g_renderObjects[22]);
 
-	// initialize some clothes
+	// initialize inventory selection
 	snowman->SetHeadAccessory(clothes->hat.root);
 	inventoryTogglerObjects[21]->SetSelected(true);
 	snowman->SetNose(clothes->carrot.root);
 	inventoryTogglerObjects[15]->SetSelected(true);
 	snowman->SetTorsoAccessory(clothes->scarf.root);
 	inventoryTogglerObjects[12]->SetSelected(true);
+	snowman->SetHandAccessory(clothes->glove_left.root, clothes->glove_right.root);
+	inventoryTogglerObjects[6]->SetSelected(true);
 
     float prev_time = 0;
 
@@ -377,7 +386,8 @@ int main(int argc, char** argv)
 		snowman->Render(main_camera, material);
 		for (int index = 0; index < 24; index++)
 		{
-			if (inventoryTogglerObjects[index]->GetSelected())
+			if (inventoryTogglerObjects[index]
+				&& inventoryTogglerObjects[index]->GetSelected())
 				clothes->RenderObject(main_camera, material, index);
 		}
 
