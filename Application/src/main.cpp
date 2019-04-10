@@ -391,8 +391,10 @@ int main(int argc, char** argv)
 				clothes->RenderObject(main_camera, material, index);
 		}
 
-		material->UpdateColor(glm::vec4(0x9A / 255.0f, 0xAC / 255.0f, 0xB8 / 255.0f, 1.0f));
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		terrain->Render(main_camera);
+		glDisable(GL_BLEND);
 
 		// Render UIs
 		material->UpdateEnableLighting(false);

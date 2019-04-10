@@ -455,15 +455,15 @@ void Geometry::GenerateTerrainMesh(Engine::Mesh *mesh)
 		glm::vec3 normal = glm::vec3(randf(-0.1f, 0.1f), randf(-0.1f, 0.1f), 1.0f);
 
 		mesh->AddVertexData(glm::vec4(faces[i], 1.0f)); // position
-		mesh->AddVertexData(glm::vec4(0.7f)); // color
+		mesh->AddVertexData(glm::vec4(0.2f)); // color
 		mesh->AddVertexData(glm::vec4(normal, 1.0f)); // normal
 
 		mesh->AddVertexData(glm::vec4(faces[i + 1], 1.0f)); // position
-		mesh->AddVertexData(glm::vec4(0.7f)); // color
+		mesh->AddVertexData(glm::vec4(0.2f)); // color
 		mesh->AddVertexData(glm::vec4(normal, 1.0f)); // normal
 
 		mesh->AddVertexData(glm::vec4(faces[i + 2], 1.0f)); // position
-		mesh->AddVertexData(glm::vec4(0.7f)); // color
+		mesh->AddVertexData(glm::vec4(0.2f)); // color
 		mesh->AddVertexData(glm::vec4(normal, 1.0f)); // normal
 	}
 

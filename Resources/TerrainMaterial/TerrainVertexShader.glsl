@@ -11,6 +11,10 @@ uniform mat4 projectionMatrix;
 out vec4 frag_color;
 out vec3 out_normal;
 out vec3 toCamera;
+out float transparency;
+
+const float terrain_inner_radius = 0.5;
+const float terrain_outer_radius = 0.8;
 
 mat4 NormalMatrix(mat4 MVM)
 {
@@ -24,6 +28,8 @@ mat4 NormalMatrix(mat4 MVM)
 
 void main()
 {
+	vec4 world_pos = worldTransform * pos;
+
 	// Output position of the vertex, in clip space : MVP * position
 	mat4 MVM = inverse(cameraTransform) * worldTransform;
 	mat4 NVM = NormalMatrix(MVM);
@@ -32,7 +38,10 @@ void main()
 	gl_Position = projectionMatrix * wPosition;
 
 	out_normal = normalize(vec3(worldTransform * normal));
-	toCamera = cameraTransform[3].xyz - vec3(worldTransform * pos);
+	toCamera = cameraTransform[3].xyz - vec3(world_pos);
+
+	float radius = length(pos.xy);
+	transparency = 1.0 - clamp((radius - terrain_inner_radius) / (terrain_outer_radius - terrain_inner_radius), 0.0f, 1.0f);
 
     frag_color = color;
 }
