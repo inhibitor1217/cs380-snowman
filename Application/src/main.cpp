@@ -29,6 +29,7 @@
 #include <UISelectableObject.hpp>
 #include <UIButton.hpp>
 #include <UIToggler.hpp>
+#include <Terrain.hpp>
 
 #define _USE_MATH_DEFINES
 constexpr float PI = 3.1415926f;
@@ -259,8 +260,7 @@ int main(int argc, char** argv)
 	pickingMaterial->CreateMaterial();
 
 	// Temporary terrain
-	Engine::RenderObject *terrainObject = new Engine::RenderObject(squareMesh, material);
-	terrainObject->SetScale(glm::vec3(10.0f, 10.0f, 1.0f));
+	Terrain *terrain = new Terrain(geometry);
 
 	// Create actual components and attach them to skeleton
 	Snowman *snowman = new Snowman(geometry, material);
@@ -392,7 +392,7 @@ int main(int argc, char** argv)
 		}
 
 		material->UpdateColor(glm::vec4(0x9A / 255.0f, 0xAC / 255.0f, 0xB8 / 255.0f, 1.0f));
-		terrainObject->Render(main_camera);
+		terrain->Render(main_camera);
 
 		// Render UIs
 		material->UpdateEnableLighting(false);

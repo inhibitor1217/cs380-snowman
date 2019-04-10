@@ -401,3 +401,72 @@ void Geometry::GenerateSquare(Engine::Mesh *mesh)
 	mesh->SetNumElements(6);
 	mesh->CreateMesh();
 }
+
+void Geometry::GenerateTerrainMesh(Engine::Mesh *mesh)
+{
+	mesh->AddAttribute(4); // position
+	mesh->AddAttribute(4); // color
+	mesh->AddAttribute(4); // normal
+
+	int terrain_resolution = 5;
+
+	const float angle = PI / 3.0f;
+	std::vector<glm::vec3> faces, faces_buffer;
+	glm::vec3 initial_pos[] = {
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(cos(angle * 0), sin(angle * 0), 0.0f),
+		glm::vec3(cos(angle * 1), sin(angle * 1), 0.0f),
+		glm::vec3(cos(angle * 2), sin(angle * 2), 0.0f),
+		glm::vec3(cos(angle * 3), sin(angle * 3), 0.0f),
+		glm::vec3(cos(angle * 4), sin(angle * 4), 0.0f),
+		glm::vec3(cos(angle * 5), sin(angle * 5), 0.0f)
+	};
+	int initial_indices[] = {
+		0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 1
+	};
+
+	for (int i = 0; i < 18; i++)
+		faces.push_back(initial_pos[initial_indices[i]]);
+
+	while (terrain_resolution--)
+	{
+		faces_buffer.clear();
+
+		for (int i = 0; i < faces.size(); i += 3)
+		{
+			glm::vec3 m1 = 0.5f * (faces[i + 0] + faces[i + 1]);
+			glm::vec3 m2 = 0.5f * (faces[i + 1] + faces[i + 2]);
+			glm::vec3 m3 = 0.5f * (faces[i + 2] + faces[i + 0]);
+
+			glm::vec3 refined_triangles[12] = {
+				faces[i], m1, m3, faces[i + 1], m2, m1, faces[i + 2], m3, m2, m1, m2, m3
+			};
+
+			for (int j = 0; j < 12; j++)
+				faces_buffer.push_back(refined_triangles[j]);
+		}
+
+		faces = faces_buffer;
+	}
+
+	/* Add final data into the mesh and finish creation. */
+	for (int i = 0; i < faces.size(); i += 3)
+	{
+		glm::vec3 normal = glm::vec3(randf(-0.1f, 0.1f), randf(-0.1f, 0.1f), 1.0f);
+
+		mesh->AddVertexData(glm::vec4(faces[i], 1.0f)); // position
+		mesh->AddVertexData(glm::vec4(0.7f)); // color
+		mesh->AddVertexData(glm::vec4(normal, 1.0f)); // normal
+
+		mesh->AddVertexData(glm::vec4(faces[i + 1], 1.0f)); // position
+		mesh->AddVertexData(glm::vec4(0.7f)); // color
+		mesh->AddVertexData(glm::vec4(normal, 1.0f)); // normal
+
+		mesh->AddVertexData(glm::vec4(faces[i + 2], 1.0f)); // position
+		mesh->AddVertexData(glm::vec4(0.7f)); // color
+		mesh->AddVertexData(glm::vec4(normal, 1.0f)); // normal
+	}
+
+	mesh->SetNumElements(faces.size());
+	mesh->CreateMesh();
+}

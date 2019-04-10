@@ -17,9 +17,7 @@ void main()
 		vec3 normal = normalize(fragmentNormal.xyz);
 
 		float diffuse = max(ambient, dot(normal, tolight));
-		vec4 intensity = frag_color * diffuse;
-
-		output_color = intensity;
+		output_color = frag_color * diffuse;
 	}
 	else
 	{

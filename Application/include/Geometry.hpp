@@ -23,6 +23,7 @@ public:
 	void GenerateLine(Engine::Mesh* mesh);
 	void GenerateStar(Engine::Mesh* mesh);
 	void GenerateSquare(Engine::Mesh *mesh);
+	void GenerateTerrainMesh(Engine::Mesh *mesh);
 
 	void GenerateCube(Engine::Mesh* mesh);
 	void GenerateIcosphere(Engine::Mesh *mesh, int resolution_level);

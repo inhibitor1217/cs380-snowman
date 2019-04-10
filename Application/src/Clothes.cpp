@@ -256,6 +256,7 @@ void Clothes::RenderObject(Engine::Camera *camera, DefaultMaterial *material, in
 		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xBF / 255.0f, 0x00 / 255.0f, 1.0f));
 		scarf.edge1->Render(camera);
 		scarf.edge2->Render(camera);
+		break;
 	case 15:
 		material->UpdateColor(glm::vec4(0xFB / 255.0f, 0x88 / 255.0f, 0x31 / 255.0f, 1.0f));
 		carrot.root->Render(camera);
@@ -283,13 +284,14 @@ void Clothes::RenderUIObject(Engine::Camera *camera, DefaultMaterial *material, 
 		green_glove_icon.thumb->Render(camera);
 		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xFF / 255.0f, 0xFF / 255.0f, 1.0f));
 		green_glove_icon.wrist->Render(camera);
+		break;
 	case 7:
 		material->UpdateColor(glm::vec4(0xE5 / 255.0f, 0x00 / 255.0f, 0x22 / 255.0f, 1.0f));
 		red_glove_icon.hand->Render(camera);
 		red_glove_icon.thumb->Render(camera);
 		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xFF / 255.0f, 0xFF / 255.0f, 1.0f));
 		red_glove_icon.wrist->Render(camera);
-
+		break;
 	case 12:
 		material->UpdateColor(glm::vec4(0x14 / 255.0f, 0x6B / 255.0f, 0x3A / 255.0f, 1.0f));
 		green_scarf_icon.body->Render(camera);
@@ -311,6 +313,7 @@ void Clothes::RenderUIObject(Engine::Camera *camera, DefaultMaterial *material, 
 	case 15:
 		material->UpdateColor(glm::vec4(0xFB / 255.0f, 0x88 / 255.0f, 0x31 / 255.0f, 1.0f));
 		carrot_icon.root->Render(camera);
+		break;
 	case 21:
 		material->UpdateColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
 		hat_icon.body->Render(camera);
