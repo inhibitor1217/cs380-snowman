@@ -29,6 +29,9 @@ Snowman::Snowman(Geometry geometry, Engine::Material *material)
 	b_headAccessory->SetOrientation(glm::rotate(
 		glm::mat4(1.0f), 0.1f, glm::vec3(1.0f, -1.0f, 0.0f)
 	));
+	b_torsoAccessory = new Engine::RenderObject(nullptr, nullptr);
+	b_torsoAccessory->AddParent(b_torso);
+	b_torsoAccessory->SetPosition(glm::vec3(0.0f, 0.0f, 0.5f));
 	b_leftShoulder = new Engine::RenderObject(nullptr, nullptr);
 	b_leftShoulder->AddParent(b_torso);
 	b_leftShoulder->SetOrientation(glm::rotate(
@@ -159,4 +162,10 @@ void Snowman::SetNose(Engine::RenderObject *obj)
 {
 	obj->AddParent(b_nose);
 	nose = obj;
+}
+
+void Snowman::SetTorsoAccessory(Engine::RenderObject *obj)
+{
+	obj->AddParent(b_torsoAccessory);
+	torsoAccessory = obj;
 }

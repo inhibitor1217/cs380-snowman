@@ -19,9 +19,15 @@ private:
 		Engine::RenderObject *root;
 	};
 
+	struct ScarfObject
+	{
+		Engine::RenderObject *root, *body, *branch1, *branch2, *edge1, *edge2;
+	};
+
 public:
-	struct HatObject hat, ui_hat;
-	struct CarrotNoseObject carrotNose;
+	struct HatObject hat, hat_icon;
+	struct CarrotNoseObject carrot, carrot_icon;
+	struct ScarfObject scarf, green_scarf_icon, red_scarf_icon;
 
 public:
 	Clothes(Geometry geometry, Engine::Material *material);

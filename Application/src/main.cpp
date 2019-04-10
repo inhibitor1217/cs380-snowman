@@ -56,6 +56,12 @@ static float cursor_x = 0.0f, cursor_y = 0.0f, cursor_prev_x = 0.0f, cursor_prev
 /* Static list containing the UI components. */
 static std::vector<UIObject *> uiObjects;
 static UIToggler *inventoryTogglerObjects[24];
+static int inventory_conflicts[4][6] = {
+	{12, 13},
+	{},
+	{},
+	{}
+};
 
 /* Some constants regarding the inventory. */
 constexpr int INVENTORY_WIDTH = 3;
@@ -118,7 +124,26 @@ static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action
 				if (g_renderObjects.find(press_target) != g_renderObjects.end())
 					g_renderObjects[press_target]->onRelease();
 				if (target == press_target && g_renderObjects.find(press_target) != g_renderObjects.end())
+				{
 					g_renderObjects[press_target]->onClick();
+
+					/* Handle duplicate selection for accessories */
+					for (int i = 0; i < 4; i++)
+					{
+						std::vector<int> selected;
+						for (int j = 0; j < 6; j++)
+						{
+							if (inventoryTogglerObjects[inventory_conflicts[i][j]]->GetSelected())
+								selected.push_back(inventory_conflicts[i][j]);
+						}
+						if (selected.size() > 1 && std::find(selected.begin(), selected.end(), press_target - 1) != selected.end())
+						{
+							for (auto index : selected)
+								if (index != press_target - 1)
+									inventoryTogglerObjects[index]->SetSelected(false);
+						}
+					}
+				}
 				press_target = 0;
 			}
 		}
@@ -198,9 +223,6 @@ int main(int argc, char** argv)
     // Accept fragment if it closer to the camera than the former one
     glDepthFunc(GL_LESS);
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
-
     glfwSetInputMode(g_window, GLFW_STICKY_KEYS, GL_TRUE);
     glfwSetMouseButtonCallback(g_window, MouseButtonCallback);
     glfwSetCursorPosCallback(g_window, CursorPosCallback);
@@ -277,15 +299,18 @@ int main(int argc, char** argv)
 			inventoryTogglerObjects[y * INVENTORY_WIDTH + x] = inventoryObject;
 		}
 	}
-	clothes->ui_hat.root->AddParent(g_renderObjects[22]);
-
-	// connect inventory window with actual objects
-
+	clothes->green_scarf_icon.root->AddParent(g_renderObjects[13]);
+	clothes->red_scarf_icon.root->AddParent(g_renderObjects[14]);
+	clothes->carrot_icon.root->AddParent(g_renderObjects[16]);
+	clothes->hat_icon.root->AddParent(g_renderObjects[22]);
 
 	// initialize some clothes
 	snowman->SetHeadAccessory(clothes->hat.root);
 	inventoryTogglerObjects[21]->SetSelected(true);
-	snowman->SetNose(clothes->carrotNose.root);
+	snowman->SetNose(clothes->carrot.root);
+	inventoryTogglerObjects[15]->SetSelected(true);
+	snowman->SetTorsoAccessory(clothes->scarf.root);
+	inventoryTogglerObjects[12]->SetSelected(true);
 
     float prev_time = 0;
 

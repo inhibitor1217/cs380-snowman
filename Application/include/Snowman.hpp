@@ -15,6 +15,7 @@ private:
 	Engine::RenderObject *b_head;
 	Engine::RenderObject *b_nose;
 	Engine::RenderObject *b_headAccessory;
+	Engine::RenderObject *b_torsoAccessory;
 	Engine::RenderObject *b_leftShoulder;
 	Engine::RenderObject *b_leftArm;
 	Engine::RenderObject *b_leftHand;
@@ -36,6 +37,7 @@ private:
 
 	Engine::RenderObject *nose;
 	Engine::RenderObject *headAccessory;
+	Engine::RenderObject *torsoAccessory;
 
 public:
     Snowman(Geometry geometry, Engine::Material *material);
@@ -44,6 +46,7 @@ public:
 	
 	void SetHeadAccessory(Engine::RenderObject *obj);
 	void SetNose(Engine::RenderObject *obj);
+	void SetTorsoAccessory(Engine::RenderObject *obj);
 
 	void Render(Engine::Camera *cam, DefaultMaterial *material);
 };
