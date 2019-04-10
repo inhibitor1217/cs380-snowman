@@ -17,23 +17,29 @@ Clothes::Clothes(Geometry geometry, Engine::Material *material)
 	geometry.GenerateSquare(squareMesh);
 	Engine::Mesh *cubeMesh = new Engine::Mesh();
 	geometry.GenerateCube(cubeMesh);
+	Engine::Mesh *sphereMesh = new Engine::Mesh();
+	geometry.GenerateIcosphere(sphereMesh, 2);
+	Engine::Mesh *earMesh = new Engine::Mesh();
+	geometry.GenerateCone(earMesh, 3);
 
 	hat.root = new Engine::RenderObject(nullptr, nullptr);
 	hat.body = new Engine::RenderObject(hatMesh, material);
 	hat.body->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+	hat.body->SetPosition(glm::vec3(0.0f, 0.0f, 0.5f));
 	hat.body->AddParent(hat.root);
 	hat.ribbon = new Engine::RenderObject(cylinderMesh, material);
 	hat.ribbon->SetScale(glm::vec3(0.4f, 0.4f, 0.1f));
+	hat.ribbon->SetPosition(glm::vec3(0.0f, 0.0f, 0.5f));
 	hat.ribbon->AddParent(hat.root);
 	hat.bottom = new Engine::RenderObject(cylinderMesh, material);
-	hat.bottom->SetScale(glm::vec3(0.6f, 0.6f, 0.025f));
-	hat.bottom->SetPosition(glm::vec3(0.0f, 0.0f, -0.5f));
+	hat.bottom->SetScale(glm::vec3(0.6f, 0.6f, 0.05f));
 	hat.bottom->AddParent(hat.root);
 
 	hat_icon.root = new Engine::RenderObject(nullptr, nullptr);
 	hat_icon.root->SetOrientation(glm::rotate(
 		glm::mat4(1.0f), -0.5f * PI, glm::vec3(1.0f, 0.0f, 0.0f)
 	));
+	hat_icon.root->SetPosition(glm::vec3(-0.015f, -0.01f, 0.03f));
 	hat_icon.body = new Engine::RenderObject(hatMesh, material);
 	hat_icon.body->SetScale(glm::vec3(0.025f, 0.025f, 0.025f));
 	hat_icon.body->AddParent(hat_icon.root);
@@ -45,6 +51,117 @@ Clothes::Clothes(Geometry geometry, Engine::Material *material)
 	hat_icon.bottom->SetPosition(glm::vec3(0.0f, 0.0f, -0.025f));
 	hat_icon.bottom->AddParent(hat_icon.root);
 
+	wizard_hat.root = new Engine::RenderObject(nullptr, nullptr);
+	wizard_hat.body = new Engine::RenderObject(coneMesh, material);
+	wizard_hat.body->AddParent(wizard_hat.root);
+	wizard_hat.body->SetScale(glm::vec3(0.4f, 0.4f, 1.0f));
+	wizard_hat.bottom = new Engine::RenderObject(cylinderMesh, material);
+	wizard_hat.bottom->AddParent(wizard_hat.root);
+	wizard_hat.bottom->SetScale(glm::vec3(0.7f, 0.7f, 0.01f));
+
+	wizard_hat_icon.root = new Engine::RenderObject(nullptr, nullptr);
+	wizard_hat_icon.root->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -0.5f * PI, glm::vec3(1.0f, 0.0f, 0.0f)
+	));
+	wizard_hat_icon.root->SetPosition(glm::vec3(-0.015f, -0.025f, 0.03f));
+	wizard_hat_icon.body = new Engine::RenderObject(coneMesh, material);
+	wizard_hat_icon.body->AddParent(wizard_hat_icon.root);
+	wizard_hat_icon.body->SetScale(glm::vec3(0.02f, 0.02f, 0.05f));
+	wizard_hat_icon.bottom = new Engine::RenderObject(cylinderMesh, material);
+	wizard_hat_icon.bottom->AddParent(wizard_hat_icon.root);
+	wizard_hat_icon.bottom->SetScale(glm::vec3(0.035f, 0.035f, 0.0005f));
+	
+	santa_hat.root = new Engine::RenderObject(nullptr, nullptr);
+	santa_hat.bottom = new Engine::RenderObject(scarfMesh, material);
+	santa_hat.bottom->AddParent(santa_hat.root);
+	santa_hat.bottom->SetScale(glm::vec3(0.5f, 0.5f, 0.15f));
+	santa_hat.body = new Engine::RenderObject(coneMesh, material);
+	santa_hat.body->AddParent(santa_hat.root);
+	santa_hat.body->SetScale(glm::vec3(0.45f, 0.45f, 1.0f));
+	santa_hat.body->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -0.3f, glm::vec3(1.0f, 1.0f, 0.0f)
+	));
+	santa_hat.end = new Engine::RenderObject(sphereMesh, material);
+	santa_hat.end->AddParent(santa_hat.body);
+	santa_hat.end->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
+	santa_hat.end->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+
+	santa_hat_icon.root = new Engine::RenderObject(nullptr, nullptr);
+	santa_hat_icon.root->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -0.5f * PI, glm::vec3(1.0f, 0.0f, 0.0f)
+	));
+	santa_hat_icon.root->SetPosition(glm::vec3(-0.015f, -0.025f, 0.02f));
+	santa_hat_icon.bottom = new Engine::RenderObject(scarfMesh, material);
+	santa_hat_icon.bottom->AddParent(santa_hat_icon.root);
+	santa_hat_icon.bottom->SetScale(glm::vec3(0.025f, 0.025f, 0.007f));
+	santa_hat_icon.body = new Engine::RenderObject(coneMesh, material);
+	santa_hat_icon.body->AddParent(santa_hat_icon.root);
+	santa_hat_icon.body->SetScale(glm::vec3(0.022f, 0.022f, 0.05f));
+	santa_hat_icon.body->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -0.3f, glm::vec3(1.0f, 1.0f, 0.0f)
+	));
+	santa_hat_icon.end = new Engine::RenderObject(sphereMesh, material);
+	santa_hat_icon.end->AddParent(santa_hat_icon.body);
+	santa_hat_icon.end->SetScale(glm::vec3(0.005f, 0.005f, 0.005f));
+	santa_hat_icon.end->SetPosition(glm::vec3(0.0f, 0.0f, 0.05f));
+
+	cat_ear.root = new Engine::RenderObject(nullptr, nullptr);
+	cat_ear.root->SetPosition(glm::vec3(0.05f, 0.0f, -0.12f));
+	cat_ear.leftEar = new Engine::RenderObject(earMesh, material);
+	cat_ear.leftEar->AddParent(cat_ear.root);
+	cat_ear.leftEar->SetPosition(glm::vec3(0.4f, 0.0f, 0.0f));
+	cat_ear.leftEar->SetOrientation(glm::rotate(
+		glm::rotate(
+			glm::mat4(1.0f), 0.7f, glm::vec3(0.0f, 1.0f, 0.0f)
+		), PI, glm::vec3(0.0f, 0.0f, 1.0f)
+	));
+	cat_ear.leftEar->SetScale(glm::vec3(0.3f, 0.15f, 0.3f));
+	cat_ear.leftInnerEar = new Engine::RenderObject(earMesh, material);
+	cat_ear.leftInnerEar->AddParent(cat_ear.leftEar);
+	cat_ear.leftInnerEar->SetPosition(glm::vec3(0.0f, 0.05f, 0.0f));
+	cat_ear.leftInnerEar->SetScale(glm::vec3(0.2f, 0.1f, 0.2f));
+	cat_ear.rightEar = new Engine::RenderObject(earMesh, material);
+	cat_ear.rightEar->AddParent(cat_ear.root);
+	cat_ear.rightEar->SetPosition(glm::vec3(-0.4f, 0.0f, 0.0f));
+	cat_ear.rightEar->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -0.7f, glm::vec3(0.0f, 1.0f, 0.0f)
+	));
+	cat_ear.rightEar->SetScale(glm::vec3(0.3f, 0.15f, 0.3f));
+	cat_ear.rightInnerEar = new Engine::RenderObject(earMesh, material);
+	cat_ear.rightInnerEar->AddParent(cat_ear.rightEar);
+	cat_ear.rightInnerEar->SetPosition(glm::vec3(0.0f, -0.05f, 0.0f));
+	cat_ear.rightInnerEar->SetScale(glm::vec3(0.2f, 0.1f, 0.2f));
+
+	cat_ear_icon.root = new Engine::RenderObject(nullptr, nullptr);
+	cat_ear_icon.root->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -0.4f * PI, glm::vec3(1.0f, 0.0f, 0.0f)
+	));
+	cat_ear_icon.root->SetPosition(glm::vec3(0.0f, 0.0f, 0.005f));
+	cat_ear_icon.leftEar = new Engine::RenderObject(earMesh, material);
+	cat_ear_icon.leftEar->AddParent(cat_ear_icon.root);
+	cat_ear_icon.leftEar->SetPosition(glm::vec3(0.02f, 0.0f, 0.0f));
+	cat_ear_icon.leftEar->SetOrientation(glm::rotate(
+		glm::rotate(
+			glm::mat4(1.0f), 0.7f, glm::vec3(0.0f, 1.0f, 0.0f)
+		), PI, glm::vec3(0.0f, 0.0f, 1.0f)
+	));
+	cat_ear_icon.leftEar->SetScale(glm::vec3(0.02f, 0.01f, 0.02f));
+	cat_ear_icon.leftInnerEar = new Engine::RenderObject(earMesh, material);
+	cat_ear_icon.leftInnerEar->AddParent(cat_ear_icon.leftEar);
+	cat_ear_icon.leftInnerEar->SetPosition(glm::vec3(0.0f, 0.005f, 0.0f));
+	cat_ear_icon.leftInnerEar->SetScale(glm::vec3(0.013f, 0.0067f, 0.013f));
+	cat_ear_icon.rightEar = new Engine::RenderObject(earMesh, material);
+	cat_ear_icon.rightEar->AddParent(cat_ear_icon.root);
+	cat_ear_icon.rightEar->SetPosition(glm::vec3(-0.02f, 0.0f, 0.0f));
+	cat_ear_icon.rightEar->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -0.7f, glm::vec3(0.0f, 1.0f, 0.0f)
+	));
+	cat_ear_icon.rightEar->SetScale(glm::vec3(0.02f, 0.01f, 0.02f));
+	cat_ear_icon.rightInnerEar = new Engine::RenderObject(earMesh, material);
+	cat_ear_icon.rightInnerEar->AddParent(cat_ear_icon.rightEar);
+	cat_ear_icon.rightInnerEar->SetPosition(glm::vec3(0.0f, -0.005f, 0.0f));
+	cat_ear_icon.rightInnerEar->SetScale(glm::vec3(0.013f, 0.0067f, 0.013f));
+
 	carrot.root = new Engine::RenderObject(coneMesh, material);
 	carrot.root->SetScale(glm::vec3(0.07f, 0.07f, 0.4f));
 
@@ -54,6 +171,30 @@ Clothes::Clothes(Geometry geometry, Engine::Material *material)
 	carrot_icon.root->SetOrientation(glm::rotate(
 		glm::mat4(1.0f), -0.3f * PI, glm::vec3(1.0f, 0.5f, -0.5f)
 	));
+
+	rudolph.root = new Engine::RenderObject(nullptr, nullptr);
+	rudolph.body = new Engine::RenderObject(cylinderMesh, material);
+	rudolph.body->AddParent(rudolph.root);
+	rudolph.body->SetScale(glm::vec3(0.02f, 0.02f, 0.2f));
+	rudolph.body->SetPosition(glm::vec3(0.0f, 0.0f, 0.2f));
+	rudolph.end = new Engine::RenderObject(sphereMesh, material);
+	rudolph.end->AddParent(rudolph.root);
+	rudolph.end->SetScale(glm::vec3(0.1f, 0.1f, 0.1f));
+	rudolph.end->SetPosition(glm::vec3(0.0f, 0.0f, 0.4f));
+
+	rudolph_icon.root = new Engine::RenderObject(nullptr, nullptr);
+	rudolph_icon.root->SetPosition(glm::vec3(0.0f, -0.01f, 0.0f));
+	rudolph_icon.root->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -0.3f * PI, glm::vec3(1.0f, 0.5f, -0.5f)
+	));
+	rudolph_icon.body = new Engine::RenderObject(cylinderMesh, material);
+	rudolph_icon.body->AddParent(rudolph_icon.root);
+	rudolph_icon.body->SetScale(glm::vec3(0.002f, 0.002f, 0.02f));
+	rudolph_icon.body->SetPosition(glm::vec3(0.0f, 0.0f, 0.02f));
+	rudolph_icon.end = new Engine::RenderObject(sphereMesh, material);
+	rudolph_icon.end->AddParent(rudolph_icon.root);
+	rudolph_icon.end->SetScale(glm::vec3(0.01f, 0.01f, 0.01f));
+	rudolph_icon.end->SetPosition(glm::vec3(0.0f, 0.0f, 0.04f));
 
 	scarf.root = new Engine::RenderObject(nullptr, nullptr);
 	scarf.body = new Engine::RenderObject(scarfMesh, material);
@@ -261,6 +402,20 @@ void Clothes::RenderObject(Engine::Camera *camera, DefaultMaterial *material, in
 		material->UpdateColor(glm::vec4(0xFB / 255.0f, 0x88 / 255.0f, 0x31 / 255.0f, 1.0f));
 		carrot.root->Render(camera);
 		break;
+	case 16:
+		material->UpdateColor(glm::vec4(0x60 / 255.0f, 0x41 / 255.0f, 0x2B / 255.0f, 0.1f));
+		rudolph.body->Render(camera);
+		material->UpdateColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		rudolph.end->Render(camera);
+		break;
+	case 18:
+		material->UpdateColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+		cat_ear.leftEar->Render(camera);
+		cat_ear.rightEar->Render(camera);
+		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xB6 / 255.0f, 0xD5 / 255.0f, 1.0f));
+		cat_ear.leftInnerEar->Render(camera);
+		cat_ear.rightInnerEar->Render(camera);
+		break;
 	case 21:
 		material->UpdateColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
 		hat.body->Render(camera);
@@ -268,6 +423,18 @@ void Clothes::RenderObject(Engine::Camera *camera, DefaultMaterial *material, in
 		hat.ribbon->Render(camera);
 		material->UpdateColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
 		hat.bottom->Render(camera);
+		break;
+	case 22:
+		material->UpdateColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+		wizard_hat.body->Render(camera);
+		wizard_hat.bottom->Render(camera);
+		break;
+	case 23:
+		material->UpdateColor(glm::vec4(0xE5 / 255.0f, 0x00 / 255.0f, 0x22 / 255.0f, 1.0f));
+		santa_hat.body->Render(camera);
+		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xFF / 255.0f, 0xFF / 255.0f, 1.0f));
+		santa_hat.bottom->Render(camera);
+		santa_hat.end->Render(camera);
 		break;
 	default:
 		break;
@@ -314,6 +481,20 @@ void Clothes::RenderUIObject(Engine::Camera *camera, DefaultMaterial *material, 
 		material->UpdateColor(glm::vec4(0xFB / 255.0f, 0x88 / 255.0f, 0x31 / 255.0f, 1.0f));
 		carrot_icon.root->Render(camera);
 		break;
+	case 16:
+		material->UpdateColor(glm::vec4(0x60 / 255.0f, 0x41 / 255.0f, 0x2B / 255.0f, 0.1f));
+		rudolph_icon.body->Render(camera);
+		material->UpdateColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		rudolph_icon.end->Render(camera);
+		break;
+	case 18:
+		material->UpdateColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+		cat_ear_icon.leftEar->Render(camera);
+		cat_ear_icon.rightEar->Render(camera);
+		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xB6 / 255.0f, 0xD5 / 255.0f, 1.0f));
+		cat_ear_icon.leftInnerEar->Render(camera);
+		cat_ear_icon.rightInnerEar->Render(camera);
+		break;
 	case 21:
 		material->UpdateColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
 		hat_icon.body->Render(camera);
@@ -321,6 +502,18 @@ void Clothes::RenderUIObject(Engine::Camera *camera, DefaultMaterial *material, 
 		hat_icon.ribbon->Render(camera);
 		material->UpdateColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
 		hat_icon.bottom->Render(camera);
+		break;
+	case 22:
+		material->UpdateColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
+		wizard_hat_icon.body->Render(camera);
+		wizard_hat_icon.bottom->Render(camera);
+		break;
+	case 23:
+		material->UpdateColor(glm::vec4(0xE5 / 255.0f, 0x00 / 255.0f, 0x22 / 255.0f, 1.0f));
+		santa_hat_icon.body->Render(camera);
+		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xFF / 255.0f, 0xFF / 255.0f, 1.0f));
+		santa_hat_icon.bottom->Render(camera);
+		santa_hat_icon.end->Render(camera);
 		break;
 	default:
 		break;

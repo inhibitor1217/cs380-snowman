@@ -25,7 +25,7 @@ Snowman::Snowman(Geometry geometry, Engine::Material *material)
 	b_head->SetPosition(glm::vec3(0.0f, 0.0f, 1.2f));
 	b_headAccessory = new Engine::RenderObject(nullptr, nullptr);
 	b_headAccessory->AddParent(b_head);
-	b_headAccessory->SetPosition(glm::vec3(-0.1f, -0.1f, 1.0f));
+	b_headAccessory->SetPosition(glm::vec3(-0.1f, -0.1f, 0.5f));
 	b_headAccessory->SetOrientation(glm::rotate(
 		glm::mat4(1.0f), 0.1f, glm::vec3(1.0f, -1.0f, 0.0f)
 	));
