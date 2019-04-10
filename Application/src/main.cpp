@@ -54,7 +54,8 @@ static bool cursor_initialized = false;
 static float cursor_x = 0.0f, cursor_y = 0.0f, cursor_prev_x = 0.0f, cursor_prev_y = 0.0f;
 
 /* Static list containing the UI components. */
-std::vector<UIObject *> uiObjects;
+static std::vector<UIObject *> uiObjects;
+static UIToggler *inventoryTogglerObjects[24];
 
 /* Some constants regarding the inventory. */
 constexpr int INVENTORY_WIDTH = 3;
@@ -241,8 +242,6 @@ int main(int argc, char** argv)
 
 	// Create customizable clothes
 	Clothes *clothes = new Clothes(geometry, material);
-	snowman->SetHeadAccessory(clothes->hat.root);
-	snowman->SetNose(clothes->carrotNose.root);
 
 	// Set camera focus
 	cameraTargetObject->SetPosition(snowman->GetRootObject()->GetPosition());
@@ -273,9 +272,20 @@ int main(int argc, char** argv)
 			inventoryObject->SetIndex(y * INVENTORY_WIDTH + x + 1);
 			inventoryObject->SetPickingMat(pickingMaterial);
 			inventoryObject->SetColor(glm::vec3(0.8f, 0.8f, 0.8f));
+			inventoryObject->SetSelectedColor(glm::vec3(1.0f, 1.0f, 0.3f));
 			uiObjects.push_back(inventoryObject);
+			inventoryTogglerObjects[y * INVENTORY_WIDTH + x] = inventoryObject;
 		}
 	}
+	clothes->ui_hat.root->AddParent(g_renderObjects[22]);
+
+	// connect inventory window with actual objects
+
+
+	// initialize some clothes
+	snowman->SetHeadAccessory(clothes->hat.root);
+	inventoryTogglerObjects[21]->SetSelected(true);
+	snowman->SetNose(clothes->carrotNose.root);
 
     float prev_time = 0;
 
@@ -340,8 +350,11 @@ int main(int argc, char** argv)
 		material->UpdateEnableLighting(true);
 		material->UpdateColor(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 		snowman->Render(main_camera, material);
-		clothes->RenderHat(main_camera, material);
-		clothes->RenderCarrotNose(main_camera, material);
+		for (int index = 0; index < 24; index++)
+		{
+			if (inventoryTogglerObjects[index]->GetSelected())
+				clothes->RenderObject(main_camera, material, index);
+		}
 
 		material->UpdateColor(glm::vec4(0x9A / 255.0f, 0xAC / 255.0f, 0xB8 / 255.0f, 1.0f));
 		terrainObject->Render(main_camera);
@@ -352,6 +365,10 @@ int main(int argc, char** argv)
 		{
 			material->UpdateColor(glm::vec4(obj->GetRenderColor(), 1.0f));
 			obj->Render(main_camera);
+		}
+		for (int index = 0; index < 24; index++)
+		{
+			clothes->RenderUIObject(main_camera, material, index);
 		}
 		
 		/* Swap front and back buffers */

@@ -3,7 +3,7 @@
 void UIToggler::onClick()
 {
 	_selected = !_selected;
-	std::cout << "Toggler onClick: " << _index << std::endl;
+	std::cout << "Toggler onClick: " << _index << (_selected ? "true" : "false") << std::endl;
 }
 
 glm::vec3 UIToggler::GetRenderColor()

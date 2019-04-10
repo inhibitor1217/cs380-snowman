@@ -20,13 +20,12 @@ private:
 	};
 
 public:
-	struct HatObject hat;
+	struct HatObject hat, ui_hat;
 	struct CarrotNoseObject carrotNose;
 
 public:
 	Clothes(Geometry geometry, Engine::Material *material);
-	~Clothes();
 
-	void RenderHat(Engine::Camera *camera, DefaultMaterial *material);
-	void RenderCarrotNose(Engine::Camera *camera, DefaultMaterial *material);
+	void RenderObject(Engine::Camera *camera, DefaultMaterial *material, int index);
+	void RenderUIObject(Engine::Camera *camera, DefaultMaterial *material, int index);
 };
