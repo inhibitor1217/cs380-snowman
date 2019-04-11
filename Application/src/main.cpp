@@ -93,9 +93,12 @@ std::map<int, Engine::RenderObject *> g_renderObjects;
 
 /* Static pointer to active animation. */
 Animation *activeAnimation;
-Animation *anim_Q, *anim_W, *anim_E, *anim_R;
-bool casted_Q;
+Animation *anim_Q, *anim_W, *anim_E;
+// Animation *anim_Ron, *anim_Roff;
+bool casted_Q, casting_E;
+// bool casting_R;
 constexpr float CAST_Q_TIME = 0.6f;
+constexpr float CAST_E_TIME = 1.5f;
 
 static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a_mods)
 {
@@ -185,28 +188,37 @@ static void KeyboardCallback(GLFWwindow* a_window, int a_key, int a_scancode, in
     {
         switch (a_key)
         {
-		// TODO: SELECT ANIMATION BY KEYBOARD INPUT
 		case GLFW_KEY_Q:
 			if (anim_Q != nullptr)
 				anim_Q->InitTime();
 			activeAnimation = anim_Q;
 			casted_Q = false;
+			casting_E = false;
+			// casting_R = false;
 			break;
 		case GLFW_KEY_W:
 			if (anim_W != nullptr)
 				anim_W->InitTime();
+			casting_E = false;
+			// casting_R = false;
 			activeAnimation = anim_W;
 			break;
 		case GLFW_KEY_E:
 			if (anim_E != nullptr)
 				anim_E->InitTime();
 			activeAnimation = anim_E;
+			casting_E = true;
+			// casting_R = false;
 			break;
+		/*
 		case GLFW_KEY_R:
-			if (anim_R != nullptr)
-				anim_R->InitTime();
-			activeAnimation = anim_R;
+			if (anim_Ron != nullptr)
+				anim_Ron->InitTime();
+			activeAnimation = anim_Ron;
+			casting_E = false;
+			casting_R = true;
 			break;
+		*/
 		case GLFW_KEY_H:
 			std::cout << "Help: " << std::endl;
 			std::cout << " - Q, W, E, R : Launch animation" << std::endl;
@@ -218,6 +230,22 @@ static void KeyboardCallback(GLFWwindow* a_window, int a_key, int a_scancode, in
             break;
         }
     }
+	else if (a_action == GLFW_RELEASE)
+	{
+		switch (a_key)
+		{
+		/*
+		case GLFW_KEY_R:
+			if (anim_Roff != nullptr)
+				anim_Roff->InitTime();
+			activeAnimation = anim_Roff;
+			casting_R = false;
+			break;
+		*/
+		default:
+			break;
+		}
+	}
 }
 
 void InitializeAnimations()
@@ -312,12 +340,29 @@ void InitializeAnimations()
 	anim_cast3->keyframes_head[0.0f] = idle_head;
 	anim_cast3->keyframes_leftShoulder[0.0f] = idle_leftShoulder;
 	anim_cast3->keyframes_rightShoulder[0.0f] = idle_rightShoulder;
+	anim_cast3->keyframes_rightShoulder[1.0f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -0.9f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
+
+	Animation *anim_cast4 = new Animation();
+	anim_cast4->keyframes_torso[0.0f] = idle_torso;
+	anim_cast4->keyframes_head[0.0f] = idle_head;
+	anim_cast4->keyframes_leftShoulder[0.0f] = idle_leftShoulder;
+	anim_cast4->keyframes_rightShoulder[1.0f] = idle_rightShoulder;
+	anim_cast4->keyframes_rightShoulder[0.0f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -0.9f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
 
 	anim_Q = anim_cast2;
 	anim_W = anim_greet;
 	anim_E = anim_cast1;
-	anim_R = anim_cast3;
+	// anim_Ron = anim_cast3;
+	// anim_Roff = anim_cast4;
 	activeAnimation = nullptr;
+
+	casted_Q = false;
+	casting_E = false;
+	// casting_R = false;
 }
 
 int main(int argc, char** argv)
@@ -389,6 +434,8 @@ int main(int argc, char** argv)
 
 	Engine::Mesh *squareMesh = new Engine::Mesh();
 	geometry.GenerateSquare(squareMesh);
+	Engine::Mesh *triangleMesh = new Engine::Mesh();
+	geometry.GenerateTriangle(triangleMesh);
 
 	DefaultMaterial *material = new DefaultMaterial();
 	material->CreateMaterial();
@@ -495,13 +542,19 @@ int main(int argc, char** argv)
 		}
 
 		// handle casting magic!!
-		if (inventoryTogglerObjects[3]->GetSelected() // holding wand
-			&& activeAnimation == anim_Q // casting Q
+		if (activeAnimation == anim_Q // casting Q
 			&& activeAnimation->GetTime() > CAST_Q_TIME
 			&& !casted_Q)
 		{
 			casted_Q = true;
-			terrain->GetMaterial()->UpdateGlobalColor(glm::vec4(randf(0.2f, 1.0f), randf(0.2f, 1.0f), randf(0.2f, 1.0f), 1.0f));
+			if (inventoryTogglerObjects[3]->GetSelected()) // holding wand
+				terrain->GetMaterial()->UpdateGlobalColor(glm::vec4(randf(0.2f, 1.0f), randf(0.2f, 1.0f), randf(0.2f, 1.0f), 1.0f));
+		}
+
+		if (activeAnimation == anim_E
+			&& activeAnimation->GetTime() > CAST_E_TIME)
+		{
+			casting_E = false;
 		}
 
 		/* Handle camera rotation when drag mode is enabled.
