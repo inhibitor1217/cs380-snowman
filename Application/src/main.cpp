@@ -57,10 +57,10 @@ static float cursor_x = 0.0f, cursor_y = 0.0f, cursor_prev_x = 0.0f, cursor_prev
 /* Static list containing the UI components. */
 static std::vector<UIObject *> uiObjects;
 static UIToggler *inventoryTogglerObjects[24];
-static int inventory_size = 12;
-static int inventory_visible[] = { 6, 7, 8, 12, 13, 14, 15, 16, 18, 21, 22, 23 };
+static int inventory_size = 13;
+static int inventory_visible[] = { 3, 6, 7, 8, 12, 13, 14, 15, 16, 18, 21, 22, 23 };
 static int inventory_conflicts[4][6] = {
-	{6, 7, 8},
+	{3, 6, 7, 8},
 	{12, 13, 14},
 	{15, 16},
 	{18, 21, 22, 23}
@@ -306,6 +306,7 @@ int main(int argc, char** argv)
 	}
 
 	// connect icons with UI togglers
+	clothes->wand_icon.root->AddParent(g_renderObjects[4]);
 	clothes->green_glove_icon.root->AddParent(g_renderObjects[7]);
 	clothes->red_glove_icon.root->AddParent(g_renderObjects[8]);
 	clothes->cane_icon.root->AddParent(g_renderObjects[9]);
@@ -333,6 +334,7 @@ int main(int argc, char** argv)
 	inventoryTogglerObjects[12]->SetSelected(true);
 	snowman->SetHandAccessory(clothes->glove_left.root, clothes->glove_right.root);
 	snowman->SetHandAccessory(nullptr, clothes->cane.root);
+	snowman->SetHandAccessory(nullptr, clothes->wand.root);
 	inventoryTogglerObjects[6]->SetSelected(true);
 
     float prev_time = 0;

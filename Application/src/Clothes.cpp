@@ -23,6 +23,8 @@ Clothes::Clothes(Geometry geometry, Engine::Material *material)
 	geometry.GenerateCone(earMesh, 3);
 	Engine::Mesh *cylinderWallMesh = new Engine::Mesh();
 	geometry.GenerateCylinderWall(cylinderWallMesh, 32, 2.0f, 0.4f, 0.9 * PI);
+	Engine::Mesh *wandMesh = new Engine::Mesh();
+	geometry.GenerateCylinder(wandMesh, 8, 0.2f, 1.0f);
 
 	hat.root = new Engine::RenderObject(nullptr, nullptr);
 	hat.body = new Engine::RenderObject(hatMesh, material);
@@ -469,12 +471,39 @@ Clothes::Clothes(Geometry geometry, Engine::Material *material)
 	cane_icon.end5->SetPosition(glm::vec3(0.0f, 0.01f * cos(angle * 9), 0.01f * sin(angle * 9)));
 	cane_icon.end5->SetOrientation(glm::rotate(glm::mat4(1.0f), angle * 9, glm::vec3(1.0f, 0.0f, 0.0f)));
 	cane_icon.end5->SetScale(glm::vec3(0.003f, 0.003f, 0.004f));
+
+	wand.root = new Engine::RenderObject(nullptr, nullptr);
+	wand.root->SetOrientation(glm::rotate(
+		glm::rotate(
+			glm::mat4(1.0f), 1.0f, glm::vec3(1.0f, 0.0f, 0.0f)
+		), 1.3f, glm::vec3(0.0f, 1.0f, 0.0f)
+	));
+	wand.body = new Engine::RenderObject(wandMesh, material);
+	wand.body->AddParent(wand.root);
+	wand.body->SetPosition(glm::vec3(0.0f, 0.0f, 0.3f));
+	wand.body->SetScale(glm::vec3(0.03f, 0.03f, 0.7f));
+
+	wand_icon.root = new Engine::RenderObject(nullptr, nullptr);
+	wand_icon.root->SetPosition(glm::vec3(-0.01f, -0.02f, 0.02f));
+	wand_icon.root->SetOrientation(glm::rotate(
+		glm::rotate(
+			glm::mat4(1.0f), -0.5f * PI, glm::vec3(1.0f, 0.1f, 0.0f)
+		), -0.5f * PI, glm::vec3(0.0f, 0.1f, 1.0f)
+	));
+	wand_icon.body = new Engine::RenderObject(wandMesh, material);
+	wand_icon.body->AddParent(wand_icon.root);
+	wand_icon.body->SetPosition(glm::vec3(0.0f, 0.0f, 0.03f));
+	wand_icon.body->SetScale(glm::vec3(0.003f, 0.003f, 0.035f));
 }
 
 void Clothes::RenderObject(Engine::Camera *camera, DefaultMaterial *material, int index)
 {
 	switch (index)
 	{
+	case 3:
+		material->UpdateColor(glm::vec4(0x60 / 255.0f, 0x41 / 255.0f, 0x2B / 255.0f, 0.1f));
+		wand.body->Render(camera);
+		break;
 	case 6:
 		material->UpdateColor(glm::vec4(0x14 / 255.0f, 0x6B / 255.0f, 0x3A / 255.0f, 1.0f));
 		glove_left.hand->Render(camera);
@@ -574,6 +603,10 @@ void Clothes::RenderUIObject(Engine::Camera *camera, DefaultMaterial *material, 
 {
 	switch (index)
 	{
+	case 3:
+		material->UpdateColor(glm::vec4(0x60 / 255.0f, 0x41 / 255.0f, 0x2B / 255.0f, 0.1f));
+		wand_icon.body->Render(camera);
+		break;
 	case 6:
 		material->UpdateColor(glm::vec4(0x14 / 255.0f, 0x6B / 255.0f, 0x3A / 255.0f, 1.0f));
 		green_glove_icon.hand->Render(camera);
