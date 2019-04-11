@@ -57,11 +57,11 @@ static float cursor_x = 0.0f, cursor_y = 0.0f, cursor_prev_x = 0.0f, cursor_prev
 /* Static list containing the UI components. */
 static std::vector<UIObject *> uiObjects;
 static UIToggler *inventoryTogglerObjects[24];
-static int inventory_size = 10;
-static int inventory_visible[] = { 6, 7, 12, 13, 15, 16, 18, 21, 22, 23 };
+static int inventory_size = 11;
+static int inventory_visible[] = { 6, 7, 12, 13, 14, 15, 16, 18, 21, 22, 23 };
 static int inventory_conflicts[4][6] = {
 	{6, 7},
-	{12, 13},
+	{12, 13, 14},
 	{15, 16},
 	{18, 21, 22, 23}
 };
@@ -310,6 +310,7 @@ int main(int argc, char** argv)
 	clothes->red_glove_icon.root->AddParent(g_renderObjects[8]);
 	clothes->green_scarf_icon.root->AddParent(g_renderObjects[13]);
 	clothes->red_scarf_icon.root->AddParent(g_renderObjects[14]);
+	clothes->coat_icon.root->AddParent(g_renderObjects[15]);
 	clothes->carrot_icon.root->AddParent(g_renderObjects[16]);
 	clothes->rudolph_icon.root->AddParent(g_renderObjects[17]);
 	clothes->cat_ear_icon.root->AddParent(g_renderObjects[19]);
@@ -327,6 +328,7 @@ int main(int argc, char** argv)
 	snowman->SetNose(clothes->rudolph.root);
 	inventoryTogglerObjects[15]->SetSelected(true);
 	snowman->SetTorsoAccessory(clothes->scarf.root);
+	snowman->SetTorsoAccessory(clothes->coat.root);
 	inventoryTogglerObjects[12]->SetSelected(true);
 	snowman->SetHandAccessory(clothes->glove_left.root, clothes->glove_right.root);
 	inventoryTogglerObjects[6]->SetSelected(true);

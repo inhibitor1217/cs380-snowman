@@ -470,3 +470,42 @@ void Geometry::GenerateTerrainMesh(Engine::Mesh *mesh)
 	mesh->SetNumElements(faces.size());
 	mesh->CreateMesh();
 }
+
+void Geometry::GenerateCylinderWall(Engine::Mesh *mesh, int resolution, float top_radius, float bottom_radius, float angle)
+{
+	if (resolution <= 0)
+		throw std::exception();
+
+	mesh->AddAttribute(4);
+	mesh->AddAttribute(4);
+
+	float unit_angle = angle / (float)resolution;
+
+	for (int i = 0; i < resolution; i++)
+	{
+		float a1 = -0.5f * angle + unit_angle * i;
+		float a2 = -0.5f * angle + unit_angle * (i + 1);
+		float normal_z = 0.5f * (bottom_radius - top_radius);
+
+		mesh->AddVertexData(glm::vec4(top_radius * cos(a1), top_radius * sin(a1), 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(a1), sin(a1), normal_z, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(bottom_radius * cos(a1), bottom_radius * sin(a1), -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(a1), sin(a1), normal_z, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(top_radius * cos(a2), top_radius * sin(a2), 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(a2), sin(a2), normal_z, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(bottom_radius * cos(a1), bottom_radius * sin(a1), -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(a1), sin(a1), normal_z, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(bottom_radius * cos(a2), bottom_radius * sin(a2), -1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(a2), sin(a2), normal_z, 1.0f));
+
+		mesh->AddVertexData(glm::vec4(top_radius * cos(a2), top_radius * sin(a2), 1.0f, 1.0f));
+		mesh->AddVertexData(glm::vec4(cos(a2), sin(a2), normal_z, 1.0f));
+	}
+
+	mesh->SetNumElements(6 * resolution);
+	mesh->CreateMesh();
+}

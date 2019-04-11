@@ -44,6 +44,11 @@ private:
 		Engine::RenderObject *root, *body, *branch1, *branch2, *edge1, *edge2;
 	};
 
+	struct CoatObject
+	{
+		Engine::RenderObject *root, *upper, *lower;
+	};
+
 	struct GloveObject
 	{
 		Engine::RenderObject *root, *hand, *wrist, *thumb;
@@ -57,6 +62,7 @@ public:
 	struct CarrotNoseObject carrot, carrot_icon;
 	struct RudolphNoseObject rudolph, rudolph_icon;
 	struct ScarfObject scarf, green_scarf_icon, red_scarf_icon;
+	struct CoatObject coat, coat_icon;
 	struct GloveObject glove_left, glove_right, green_glove_icon, red_glove_icon;
 
 public:

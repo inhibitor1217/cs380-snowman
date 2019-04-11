@@ -21,6 +21,8 @@ Clothes::Clothes(Geometry geometry, Engine::Material *material)
 	geometry.GenerateIcosphere(sphereMesh, 2);
 	Engine::Mesh *earMesh = new Engine::Mesh();
 	geometry.GenerateCone(earMesh, 3);
+	Engine::Mesh *cylinderWallMesh = new Engine::Mesh();
+	geometry.GenerateCylinderWall(cylinderWallMesh, 32, 2.0f, 0.4f, 0.9 * PI);
 
 	hat.root = new Engine::RenderObject(nullptr, nullptr);
 	hat.body = new Engine::RenderObject(hatMesh, material);
@@ -283,6 +285,45 @@ Clothes::Clothes(Geometry geometry, Engine::Material *material)
 	red_scarf_icon.edge2->SetScale(glm::vec3(0.022f, 0.01f, 0.05f));
 	red_scarf_icon.edge2->SetPosition(glm::vec3(0.0f, -0.01f, 0.001f));
 
+	coat.root = new Engine::RenderObject(nullptr, nullptr);
+	coat.upper = new Engine::RenderObject(cylinderWallMesh, material);
+	coat.upper->AddParent(coat.root);
+	coat.upper->SetPosition(glm::vec3(0.0f, 0.0f, 0.4f));
+	coat.upper->SetScale(glm::vec3(0.5f, 0.5f, 0.2f));
+	coat.upper->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), 0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f)
+	));
+	coat.lower = new Engine::RenderObject(cylinderWallMesh, material);
+	coat.lower->AddParent(coat.root);
+	coat.lower->SetPosition(glm::vec3(0.0f, 0.0f, -0.6f));
+	coat.lower->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+	coat.lower->SetOrientation(glm::rotate(
+		glm::rotate(
+			glm::mat4(1.0f), 0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f)
+		), PI, glm::vec3(1.0f, 0.0f, 0.0f)
+	));
+
+	coat_icon.root = new Engine::RenderObject(nullptr, nullptr);
+	coat_icon.root->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -0.5f * PI, glm::vec3(1.0f, 0.0f, 0.0f)
+	));
+	coat_icon.upper = new Engine::RenderObject(cylinderWallMesh, material);
+	coat_icon.upper->AddParent(coat_icon.root);
+	coat_icon.upper->SetPosition(glm::vec3(0.0f, 0.0f, 0.01f));
+	coat_icon.upper->SetScale(glm::vec3(0.012f, 0.012f, 0.005f));
+	coat_icon.upper->SetOrientation(glm::rotate(
+		glm::mat4(1.0f), -0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f)
+	));
+	coat_icon.lower = new Engine::RenderObject(cylinderWallMesh, material);
+	coat_icon.lower->AddParent(coat_icon.root);
+	coat_icon.lower->SetPosition(glm::vec3(0.0f, 0.0f, -0.015f));
+	coat_icon.lower->SetScale(glm::vec3(0.025f, 0.025f, 0.025f));
+	coat_icon.lower->SetOrientation(glm::rotate(
+		glm::rotate(
+			glm::mat4(1.0f), -0.5f * PI, glm::vec3(0.0f, 0.0f, 1.0f)
+		), PI, glm::vec3(1.0f, 0.0f, 0.0f)
+	));
+
 	glove_left.root = new Engine::RenderObject(nullptr, nullptr);
 	glove_left.hand = new Engine::RenderObject(cubeMesh, material);
 	glove_left.hand->AddParent(glove_left.root);
@@ -398,6 +439,11 @@ void Clothes::RenderObject(Engine::Camera *camera, DefaultMaterial *material, in
 		scarf.edge1->Render(camera);
 		scarf.edge2->Render(camera);
 		break;
+	case 14:
+		material->UpdateColor(glm::vec4(0x63 / 255.0f, 0x2A / 255.0f, 0x6D / 255.0f, 1.0f));
+		coat.upper->Render(camera);
+		coat.lower->Render(camera);
+		break;
 	case 15:
 		material->UpdateColor(glm::vec4(0xFB / 255.0f, 0x88 / 255.0f, 0x31 / 255.0f, 1.0f));
 		carrot.root->Render(camera);
@@ -476,6 +522,11 @@ void Clothes::RenderUIObject(Engine::Camera *camera, DefaultMaterial *material, 
 		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xBF / 255.0f, 0x00 / 255.0f, 1.0f));
 		red_scarf_icon.edge1->Render(camera);
 		red_scarf_icon.edge2->Render(camera);
+		break;
+	case 14:
+		material->UpdateColor(glm::vec4(0x63 / 255.0f, 0x2A / 255.0f, 0x6D / 255.0f, 1.0f));
+		coat_icon.upper->Render(camera);
+		coat_icon.lower->Render(camera);
 		break;
 	case 15:
 		material->UpdateColor(glm::vec4(0xFB / 255.0f, 0x88 / 255.0f, 0x31 / 255.0f, 1.0f));

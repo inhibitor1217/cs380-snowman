@@ -29,6 +29,7 @@ public:
 	void GenerateIcosphere(Engine::Mesh *mesh, int resolution_level);
 	void GenerateCylinder(Engine::Mesh *mesh, int polygon);
 	void GenerateCylinder(Engine::Mesh *mesh, int polygon, float top_radius, float bottom_radius);
+	void GenerateCylinderWall(Engine::Mesh *mesh, int resolution, float top_radius, float bottom_radius, float angle);
 	void GenerateCone(Engine::Mesh *mesh, int polygon);
 };
 
