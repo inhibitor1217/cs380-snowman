@@ -1,35 +1,98 @@
 #include <Animation.hpp>
+#include <algorithm>
 
 Animation::Animation()
 {
-    _objects = std::vector<Engine::RenderObject*>();
+	_keyframes = std::vector<KeyFrame>();
+	_time = 0.0f;
 }
 
-Animation::~Animation()
+void Animation::InitTime()
 {
-    _objects.clear();
+	_time = 0.0f;
 }
 
-void Animation::AddObject(Engine::RenderObject* object)
+void Animation::AddTime(float deltaTime)
 {
-    _objects.push_back(object);
+	_time += deltaTime;
 }
 
-void Animation::Animate(Engine::Camera* cam, float deltaTime)
+bool compareKeyFrames(Animation::KeyFrame k1, Animation::KeyFrame k2)
 {
-    // Apply constant animation
-    // Translation: moving toward (-1, -1, 0) per second
-    // Rotation: 10-degree per second
-    for (int i = 0; i < _objects.size(); i++)
-    {
-        _objects[i]->SetOrientation(glm::rotate(_objects[i]->GetOrientation(), glm::radians(deltaTime * 10.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-        _objects[i]->SetPosition(_objects[i]->GetPosition() + glm::vec3(deltaTime * -1.0f, deltaTime * -1.0f, 0.0));
-        _objects[i]->Render(cam);
+	return k1.timeStamp < k2.timeStamp;
+}
 
-        // Reposition object after its out of sight.
-        if (_objects[i]->GetPosition().y < -5.0f)
-        {
-            _objects[i]->SetPosition(glm::vec3(-5.0f + 10.0f * ((rand() % 255) / 255.0f), 5.0f * ((rand() % 255) / 255.0f), 0.0f));
-        }
-    }
+void Animation::AddKeyFrame(float time, glm::mat4 torso, glm::mat4 head, glm::mat4 leftShoulder, glm::mat4 rightShoulder)
+{
+	AddKeyFrame(time,
+		glm::quat_cast(torso),
+		glm::quat_cast(head),
+		glm::quat_cast(leftShoulder),
+		glm::quat_cast(rightShoulder)
+	);
+}
+
+void Animation::AddKeyFrame(float time, glm::quat torso, glm::quat head, glm::quat leftShoulder, glm::quat rightShoulder)
+{
+	KeyFrame keyframe;
+	keyframe.timeStamp = time;
+	keyframe.torsoJoint = torso;
+	keyframe.headJoint = head;
+	keyframe.leftShoulder = leftShoulder;
+	keyframe.rightShoulder = rightShoulder;
+
+	_keyframes.push_back(keyframe);
+	std::sort(_keyframes.begin(), _keyframes.end(), compareKeyFrames);
+}
+
+void Animation::AddKeyFrame(KeyFrame keyframe)
+{
+	_keyframes.push_back(keyframe);
+	std::sort(_keyframes.begin(), _keyframes.end(), compareKeyFrames);
+}
+
+glm::quat Lerp(glm::quat q1, glm::quat q2, float t)
+{
+	return q1 * (1.0f - t) + q2 * t;
+}
+
+Animation::KeyFrame Animation::Interpolate(float time)
+{
+	if (_keyframes.size() == 0)
+		throw std::exception();
+
+	if (_keyframes.size() == 1)
+		return _keyframes[0];
+
+	if (time < _keyframes[0].timeStamp)
+		return _keyframes[0];
+
+	for (int i = 0; i < _keyframes.size() - 1; i++)
+	{
+		if (_keyframes[i].timeStamp <= time && time < _keyframes[i + 1].timeStamp)
+		{
+			float t = (time - _keyframes[i].timeStamp) / (_keyframes[i + 1].timeStamp - _keyframes[i].timeStamp);
+
+			KeyFrame ret;
+			ret.timeStamp = time;
+			ret.torsoJoint = Lerp(_keyframes[i].torsoJoint, _keyframes[i + 1].torsoJoint, t);
+			ret.headJoint = Lerp(_keyframes[i].headJoint, _keyframes[i + 1].headJoint, t);
+			ret.leftShoulder = Lerp(_keyframes[i].leftShoulder, _keyframes[i + 1].leftShoulder, t);
+			ret.rightShoulder = Lerp(_keyframes[i].rightShoulder, _keyframes[i + 1].rightShoulder, t);
+
+			return ret;
+		}
+	}
+
+	return _keyframes[_keyframes.size() - 1];
+}
+
+void Animation::AnimateSnowman(Snowman *snowman)
+{
+	KeyFrame keyframe = Interpolate(_time);
+
+	snowman->b_torsoJoint->SetOrientation(glm::toMat4(keyframe.torsoJoint));
+	snowman->b_headJoint->SetOrientation(glm::toMat4(keyframe.headJoint));
+	snowman->b_leftShoulder->SetOrientation(glm::toMat4(keyframe.leftShoulder));
+	snowman->b_rightShoulder->SetOrientation(glm::toMat4(keyframe.rightShoulder));
 }

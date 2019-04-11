@@ -91,6 +91,8 @@ Engine::RenderObject *g_UIRootObject = nullptr;
 /* Global map containing all render objects with indices. */
 std::map<int, Engine::RenderObject *> g_renderObjects;
 
+/* Static pointer to active animation. */
+Animation *activeAnimation;
 
 static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a_mods)
 {
@@ -154,7 +156,6 @@ static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action
 	}
 }
 
-// TODO: Fill up GLFW cursor position callback function
 static void CursorPosCallback(GLFWwindow* a_window, double a_xpos, double a_ypos)
 {
 	cursor_x = static_cast<float>(a_xpos);
@@ -181,6 +182,7 @@ static void KeyboardCallback(GLFWwindow* a_window, int a_key, int a_scancode, in
     {
         switch (a_key)
         {
+		// TODO: SELECT ANIMATION BY KEYBOARD INPUT
         default:
             break;
         }
@@ -331,6 +333,24 @@ int main(int argc, char** argv)
 
     float prev_time = 0;
 
+	// initialize animation
+	Animation::KeyFrame idleKeyFrame;
+	idleKeyFrame.torsoJoint = glm::quat_cast(glm::mat4(1.0f));
+	idleKeyFrame.headJoint = glm::quat_cast(glm::mat4(1.0f));
+	idleKeyFrame.leftShoulder = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), 1.2f, glm::vec3(0.0f, 1.0f, -0.1f)
+	));
+	idleKeyFrame.rightShoulder = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -1.4f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
+
+	Animation::KeyFrame keyframe = idleKeyFrame;
+	
+	Animation *anim_1 = new Animation();
+	// TODO: ADD MORE ANIMATIONS AND KEYFRAMES
+
+	activeAnimation = nullptr;
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(g_window) && glfwGetKey(g_window, GLFW_KEY_ESCAPE) != GLFW_PRESS)
     {
@@ -342,6 +362,13 @@ int main(int argc, char** argv)
 		float input_cursor_y = cursor_y - cursor_prev_y;
 		cursor_prev_x = cursor_x;
 		cursor_prev_y = cursor_y;
+
+		// animate objects
+		if (activeAnimation != nullptr)
+		{
+			activeAnimation->AddTime(elapsed_time);
+			activeAnimation->AnimateSnowman(snowman);
+		}
 
 		/* Handle camera rotation when drag mode is enabled.
 		 * We can do it in a clever way: instead of adusting both rotation and position of the camera,

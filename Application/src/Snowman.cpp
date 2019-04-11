@@ -11,11 +11,15 @@ Snowman::Snowman(Geometry geometry, Engine::Material *material)
 
 	b_base = new Engine::RenderObject(nullptr, nullptr);
 	b_base->SetPosition(glm::vec3(0.0f, 0.0f, 0.5f));
+	b_torsoJoint = new Engine::RenderObject(nullptr, nullptr);
+	b_torsoJoint->AddParent(b_base);
 	b_torso = new Engine::RenderObject(nullptr, nullptr);
-	b_torso->AddParent(b_base);
+	b_torso->AddParent(b_torsoJoint);
 	b_torso->SetPosition(glm::vec3(0.0f, 0.0f, 1.4f));
+	b_headJoint = new Engine::RenderObject(nullptr, nullptr);
+	b_headJoint->AddParent(b_torso);
 	b_head = new Engine::RenderObject(nullptr, nullptr);
-	b_head->AddParent(b_torso);
+	b_head->AddParent(b_headJoint);
 	b_nose = new Engine::RenderObject(nullptr, nullptr);
 	b_nose->AddParent(b_head);
 	b_nose->SetPosition(glm::vec3(0.0f, -0.6f, 0.0f));

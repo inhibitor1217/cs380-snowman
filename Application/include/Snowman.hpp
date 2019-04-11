@@ -11,7 +11,9 @@ class Snowman
 {
 private:
 	Engine::RenderObject *b_base;
+	Engine::RenderObject *b_torsoJoint;
 	Engine::RenderObject *b_torso;
+	Engine::RenderObject *b_headJoint;
 	Engine::RenderObject *b_head;
 	Engine::RenderObject *b_nose;
 	Engine::RenderObject *b_headAccessory;
@@ -34,6 +36,8 @@ private:
 	Engine::RenderObject *leftArmBranch2;
 	Engine::RenderObject *rightArm;
 	Engine::RenderObject *rightArmBranch1;
+
+	friend class Animation;
 
 public:
     Snowman(Geometry geometry, Engine::Material *material);
