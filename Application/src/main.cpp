@@ -94,6 +94,8 @@ std::map<int, Engine::RenderObject *> g_renderObjects;
 /* Static pointer to active animation. */
 Animation *activeAnimation;
 Animation *anim_Q, *anim_W, *anim_E, *anim_R;
+bool casted_Q;
+constexpr float CAST_Q_TIME = 0.6f;
 
 static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a_mods)
 {
@@ -188,6 +190,7 @@ static void KeyboardCallback(GLFWwindow* a_window, int a_key, int a_scancode, in
 			if (anim_Q != nullptr)
 				anim_Q->InitTime();
 			activeAnimation = anim_Q;
+			casted_Q = false;
 			break;
 		case GLFW_KEY_W:
 			if (anim_W != nullptr)
@@ -197,12 +200,19 @@ static void KeyboardCallback(GLFWwindow* a_window, int a_key, int a_scancode, in
 		case GLFW_KEY_E:
 			if (anim_E != nullptr)
 				anim_E->InitTime();
-			activeAnimation = anim_W;
+			activeAnimation = anim_E;
 			break;
 		case GLFW_KEY_R:
 			if (anim_R != nullptr)
 				anim_R->InitTime();
-			activeAnimation = anim_W;
+			activeAnimation = anim_R;
+			break;
+		case GLFW_KEY_H:
+			std::cout << "Help: " << std::endl;
+			std::cout << " - Q, W, E, R : Launch animation" << std::endl;
+			std::cout << " - Inventory : Click to wear or take of clothes & equipments" << std::endl;
+			std::cout << " - See what happens if you cast magic with a wand!" << std::endl;
+			std::cout << std::endl;
 			break;
         default:
             break;
@@ -210,6 +220,105 @@ static void KeyboardCallback(GLFWwindow* a_window, int a_key, int a_scancode, in
     }
 }
 
+void InitializeAnimations()
+{
+	// initialize animation
+	glm::quat idle_torso = glm::quat_cast(glm::mat4(1.0f));
+	glm::quat idle_head = glm::quat_cast(glm::mat4(1.0f));
+	glm::quat idle_leftShoulder = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), 1.2f, glm::vec3(0.0f, 1.0f, -0.1f)
+	));
+	glm::quat idle_rightShoulder = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -1.4f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
+
+	Animation *anim_cast1 = new Animation();
+	anim_cast1->keyframes_torso[0.0f] = idle_torso;
+	anim_cast1->keyframes_torso[0.4f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), 0.8f, glm::vec3(0.0f, 0.0f, 1.0f)
+	));
+	anim_cast1->keyframes_torso[0.8f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -0.2f, glm::vec3(1.0f, -0.2f, 0.0f)
+	));
+	anim_cast1->keyframes_torso[1.2f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -0.3f, glm::vec3(0.0f, 0.0f, 1.0f)
+	));
+	anim_cast1->keyframes_torso[1.5f] = idle_torso;
+	anim_cast1->keyframes_head[0.0f] = idle_head;
+	anim_cast1->keyframes_head[0.4f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -0.8f, glm::vec3(0.0f, 0.0f, 1.0f)
+	));
+	anim_cast1->keyframes_head[1.5f] = idle_head;
+	anim_cast1->keyframes_leftShoulder[0.0f] = idle_leftShoulder;
+	anim_cast1->keyframes_rightShoulder[0.0f] = idle_rightShoulder;
+	anim_cast1->keyframes_rightShoulder[0.3f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -1.2f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
+	anim_cast1->keyframes_rightShoulder[0.8f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -0.7f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
+	anim_cast1->keyframes_rightShoulder[1.2f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -1.3f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
+	anim_cast1->keyframes_rightShoulder[1.5f] = idle_rightShoulder;
+
+	Animation *anim_greet = new Animation();
+	anim_greet->keyframes_torso[0.0f] = idle_torso;
+	anim_greet->keyframes_torso[1.0f] = glm::quat_cast(glm::rotate(
+		glm::rotate(
+			glm::mat4(1.0f), 0.2f, glm::vec3(1.0f, -0.2f, 0.0f)
+		), 0.8f, glm::vec3(0.0f, 0.0f, 1.0f)
+	));;
+	anim_greet->keyframes_torso[2.0f] = idle_torso;
+	anim_greet->keyframes_head[0.0f] = idle_head;
+	anim_greet->keyframes_head[1.0f] = glm::quat_cast(glm::rotate(
+		glm::rotate(
+			glm::mat4(1.0f), 0.1f, glm::vec3(1.0f, -0.2f, 0.0f)
+		), -0.9f, glm::vec3(0.0f, 0.0f, 1.0f)
+	));;;
+	anim_greet->keyframes_head[2.0f] = idle_head;
+	anim_greet->keyframes_leftShoulder[0.0f] = idle_leftShoulder;
+	anim_greet->keyframes_leftShoulder[1.0f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), 0.9f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
+	anim_greet->keyframes_leftShoulder[2.0f] = idle_leftShoulder;
+	anim_greet->keyframes_rightShoulder[0.0f] = idle_rightShoulder;
+	anim_greet->keyframes_rightShoulder[1.0f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -2.0f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));;
+	anim_greet->keyframes_rightShoulder[2.0f] = idle_rightShoulder;
+
+	Animation *anim_cast2 = new Animation();
+	anim_cast2->keyframes_torso[0.0f] = idle_torso;
+	anim_cast2->keyframes_torso[0.5f] = idle_torso;
+	anim_cast2->keyframes_torso[0.6f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), 0.3f, glm::vec3(0.0f, 0.0f, 1.0f)
+	));
+	anim_cast2->keyframes_torso[0.8f] = idle_torso;
+	anim_cast2->keyframes_head[0.0f] = idle_head;
+	anim_cast2->keyframes_leftShoulder[0.0f] = idle_leftShoulder;
+	anim_cast2->keyframes_leftShoulder[0.5f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), 0.7f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
+	anim_cast2->keyframes_leftShoulder[1.0f] = idle_leftShoulder;
+	anim_cast2->keyframes_rightShoulder[0.0f] = idle_rightShoulder;
+	anim_cast2->keyframes_rightShoulder[0.5f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -0.9f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
+	anim_cast2->keyframes_rightShoulder[1.0f] = idle_rightShoulder;
+
+	Animation *anim_cast3 = new Animation();
+	anim_cast3->keyframes_torso[0.0f] = idle_torso;
+	anim_cast3->keyframes_head[0.0f] = idle_head;
+	anim_cast3->keyframes_leftShoulder[0.0f] = idle_leftShoulder;
+	anim_cast3->keyframes_rightShoulder[0.0f] = idle_rightShoulder;
+
+	anim_Q = anim_cast2;
+	anim_W = anim_greet;
+	anim_E = anim_cast1;
+	anim_R = anim_cast3;
+	activeAnimation = nullptr;
+}
 
 int main(int argc, char** argv)
 {
@@ -243,6 +352,10 @@ int main(int argc, char** argv)
         std::cout << "GLEW Error: " << glewGetErrorString(glew_error) << std::endl;
         exit(1);
     }
+
+	// print intro message
+	std::cout << "CS380: HW2 - Snowman by 20170737 Dongwook Hwang" << std::endl;
+	std::cout << "Press 'H' for help" << std::endl;
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
@@ -358,53 +471,9 @@ int main(int argc, char** argv)
 	snowman->SetHandAccessory(nullptr, clothes->wand.root);
 	inventoryTogglerObjects[6]->SetSelected(true);
 
+	InitializeAnimations();
+
     float prev_time = 0;
-
-	// initialize animation
-	glm::quat idle_torso = glm::quat_cast(glm::mat4(1.0f));
-	glm::quat idle_head = glm::quat_cast(glm::mat4(1.0f));
-	glm::quat idle_leftShoulder = glm::quat_cast(glm::rotate(
-		glm::mat4(1.0f), 1.2f, glm::vec3(0.0f, 1.0f, -0.1f)
-	));
-	glm::quat idle_rightShoulder = glm::quat_cast(glm::rotate(
-		glm::mat4(1.0f), -1.4f, glm::vec3(0.0f, 1.0f, -0.2f)
-	));
-
-	Animation *anim_cast1 = new Animation();
-	anim_cast1->keyframes_torso[0.0f] = idle_torso;
-	anim_cast1->keyframes_torso[0.4f] = glm::quat_cast(glm::rotate(
-		glm::mat4(1.0f), 0.8f, glm::vec3(0.0f, 0.0f, 1.0f)
-	));
-	anim_cast1->keyframes_torso[0.8f] = glm::quat_cast(glm::rotate(
-		glm::mat4(1.0f), -0.2f, glm::vec3(1.0f, -0.2f,0.0f)
-	));
-	anim_cast1->keyframes_torso[1.2f] = glm::quat_cast(glm::rotate(
-		glm::mat4(1.0f), -0.3f, glm::vec3(0.0f, 0.0f, 1.0f)
-	));
-	anim_cast1->keyframes_torso[1.5f] = idle_torso;
-	anim_cast1->keyframes_head[0.0f] = idle_head;
-	anim_cast1->keyframes_head[0.4f] = glm::quat_cast(glm::rotate(
-		glm::mat4(1.0f), -0.8f, glm::vec3(0.0f, 0.0f, 1.0f)
-	));
-	anim_cast1->keyframes_head[1.5f] = idle_head;
-	anim_cast1->keyframes_leftShoulder[0.0f] = idle_leftShoulder;
-	anim_cast1->keyframes_rightShoulder[0.0f] = idle_rightShoulder;
-	anim_cast1->keyframes_rightShoulder[0.3f] = glm::quat_cast(glm::rotate(
-		glm::mat4(1.0f), -1.2f, glm::vec3(0.0f, 1.0f, -0.2f)
-	));
-	anim_cast1->keyframes_rightShoulder[0.8f] = glm::quat_cast(glm::rotate(
-		glm::mat4(1.0f), -0.7f, glm::vec3(0.0f, 1.0f, -0.2f)
-	));
-	anim_cast1->keyframes_rightShoulder[1.2f] = glm::quat_cast(glm::rotate(
-		glm::mat4(1.0f), -1.3f, glm::vec3(0.0f, 1.0f, -0.2f)
-	));
-	anim_cast1->keyframes_rightShoulder[1.5f] = idle_rightShoulder;
-
-	anim_Q = anim_cast1;
-	anim_W = nullptr;
-	anim_E = nullptr;
-	anim_R = nullptr;
-	activeAnimation = nullptr;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(g_window) && glfwGetKey(g_window, GLFW_KEY_ESCAPE) != GLFW_PRESS)
@@ -423,6 +492,16 @@ int main(int argc, char** argv)
 		{
 			activeAnimation->AddTime(elapsed_time);
 			activeAnimation->AnimateSnowman(snowman);
+		}
+
+		// handle casting magic!!
+		if (inventoryTogglerObjects[3]->GetSelected() // holding wand
+			&& activeAnimation == anim_Q // casting Q
+			&& activeAnimation->GetTime() > CAST_Q_TIME
+			&& !casted_Q)
+		{
+			casted_Q = true;
+			terrain->GetMaterial()->UpdateGlobalColor(glm::vec4(randf(0.2f, 1.0f), randf(0.2f, 1.0f), randf(0.2f, 1.0f), 1.0f));
 		}
 
 		/* Handle camera rotation when drag mode is enabled.

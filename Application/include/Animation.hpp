@@ -23,4 +23,5 @@ public:
 	void AnimateSnowman(Snowman *snowman);
 	void InitTime();
 	void AddTime(float deltaTime);
+	float GetTime();
 };

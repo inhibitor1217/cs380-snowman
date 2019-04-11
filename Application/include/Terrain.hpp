@@ -12,4 +12,5 @@ class Terrain : public Engine::RenderObject
 
 public:
 	Terrain(Geometry geometry);
+	TerrainMaterial *GetMaterial() { return reinterpret_cast<TerrainMaterial *>(_material); };
 };

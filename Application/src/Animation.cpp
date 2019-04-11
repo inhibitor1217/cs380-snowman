@@ -20,6 +20,11 @@ void Animation::AddTime(float deltaTime)
 	_time += deltaTime;
 }
 
+float Animation::GetTime()
+{
+	return _time;
+}
+
 void Animation::AnimateSnowman(Snowman *snowman)
 {
 	if (keyframes_torso.size() == 0
