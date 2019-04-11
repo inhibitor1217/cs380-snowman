@@ -221,7 +221,7 @@ static void KeyboardCallback(GLFWwindow* a_window, int a_key, int a_scancode, in
 		*/
 		case GLFW_KEY_H:
 			std::cout << "Help: " << std::endl;
-			std::cout << " - Q, W, E, R : Launch animation" << std::endl;
+			std::cout << " - Q, W, E : Launch animation" << std::endl;
 			std::cout << " - Inventory : Click to wear or take of clothes & equipments" << std::endl;
 			std::cout << " - See what happens if you cast magic with a wand!" << std::endl;
 			std::cout << std::endl;
