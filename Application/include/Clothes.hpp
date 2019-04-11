@@ -54,6 +54,11 @@ private:
 		Engine::RenderObject *root, *hand, *wrist, *thumb;
 	};
 
+	struct CaneObject
+	{
+		Engine::RenderObject *root, *base, *center, *end1, *end2, *end3, *end4, *end5;
+	};
+
 public:
 	struct HatObject hat, hat_icon;
 	struct WizardHatObject wizard_hat, wizard_hat_icon;
@@ -64,6 +69,7 @@ public:
 	struct ScarfObject scarf, green_scarf_icon, red_scarf_icon;
 	struct CoatObject coat, coat_icon;
 	struct GloveObject glove_left, glove_right, green_glove_icon, red_glove_icon;
+	struct CaneObject cane, cane_icon;
 
 public:
 	Clothes(Geometry geometry, Engine::Material *material);

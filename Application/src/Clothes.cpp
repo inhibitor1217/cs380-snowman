@@ -395,6 +395,80 @@ Clothes::Clothes(Geometry geometry, Engine::Material *material)
 	red_glove_icon.thumb->SetOrientation(glm::rotate(
 		glm::mat4(1.0f), -1.2f, glm::vec3(0.0f, 1.0f, 0.0f)
 	));
+
+	cane.root = new Engine::RenderObject(nullptr, nullptr);
+	cane.root->SetOrientation(glm::rotate(glm::mat4(1.0f), 1.3f, glm::vec3(0.0f, 1.0f, 0.0f)));
+	cane.base = new Engine::RenderObject(cylinderMesh, material);
+	cane.base->AddParent(cane.root);
+	cane.base->SetScale(glm::vec3(0.03f, 0.03f, 1.0f));
+	cane.center = new Engine::RenderObject(nullptr, nullptr);
+	cane.center->AddParent(cane.root);
+	cane.center->SetPosition(glm::vec3(0.0f, -0.2f, 1.0f));
+	cane.end1 = new Engine::RenderObject(cylinderMesh, material);
+	cane.end1->AddParent(cane.center);
+	float angle = 0.1f * PI;
+	cane.end1->SetPosition(glm::vec3(0.0f, 0.2f * cos(angle), 0.2f * sin(angle)));
+	cane.end1->SetOrientation(glm::rotate(glm::mat4(1.0f), angle, glm::vec3(1.0f, 0.0f, 0.0f)));
+	cane.end1->SetScale(glm::vec3(0.03f, 0.03f, 0.08f));
+	cane.end2 = new Engine::RenderObject(cylinderMesh, material);
+	cane.end2->AddParent(cane.center);
+	cane.end2->SetPosition(glm::vec3(0.0f, 0.2f * cos(angle * 3), 0.2f * sin(angle * 3)));
+	cane.end2->SetOrientation(glm::rotate(glm::mat4(1.0f), angle * 3, glm::vec3(1.0f, 0.0f, 0.0f)));
+	cane.end2->SetScale(glm::vec3(0.03f, 0.03f, 0.08f));
+	cane.end3 = new Engine::RenderObject(cylinderMesh, material);
+	cane.end3->AddParent(cane.center);
+	cane.end3->SetPosition(glm::vec3(0.0f, 0.2f * cos(angle * 5), 0.2f * sin(angle * 5)));
+	cane.end3->SetOrientation(glm::rotate(glm::mat4(1.0f), angle * 5, glm::vec3(1.0f, 0.0f, 0.0f)));
+	cane.end3->SetScale(glm::vec3(0.03f, 0.03f, 0.08f));
+	cane.end4 = new Engine::RenderObject(cylinderMesh, material);
+	cane.end4->AddParent(cane.center);
+	cane.end4->SetPosition(glm::vec3(0.0f, 0.2f * cos(angle * 7), 0.2f * sin(angle * 7)));
+	cane.end4->SetOrientation(glm::rotate(glm::mat4(1.0f), angle * 7, glm::vec3(1.0f, 0.0f, 0.0f)));
+	cane.end4->SetScale(glm::vec3(0.03f, 0.03f, 0.08f));
+	cane.end5 = new Engine::RenderObject(cylinderMesh, material);
+	cane.end5->AddParent(cane.center);
+	cane.end5->SetPosition(glm::vec3(0.0f, 0.2f * cos(angle * 9), 0.2f * sin(angle * 9)));
+	cane.end5->SetOrientation(glm::rotate(glm::mat4(1.0f), angle * 9, glm::vec3(1.0f, 0.0f, 0.0f)));
+	cane.end5->SetScale(glm::vec3(0.03f, 0.03f, 0.08f));
+
+	cane_icon.root = new Engine::RenderObject(nullptr, nullptr);
+	cane_icon.root->SetPosition(glm::vec3(-0.01f, 0.0f, 0.02f));
+	cane_icon.root->SetOrientation(glm::rotate(
+		glm::rotate(
+			glm::mat4(1.0f), -0.5f * PI, glm::vec3(1.0f, 0.1f, 0.0f)
+		), -0.5f * PI, glm::vec3(0.0f, 0.1f, 1.0f)
+	));
+	cane_icon.base = new Engine::RenderObject(cylinderMesh, material);
+	cane_icon.base->AddParent(cane_icon.root);
+	cane_icon.base->SetScale(glm::vec3(0.003f, 0.003f, 0.025f));
+	cane_icon.center = new Engine::RenderObject(nullptr, nullptr);
+	cane_icon.center->AddParent(cane_icon.root);
+	cane_icon.center->SetPosition(glm::vec3(0.0f, -0.01f, 0.025f));
+	cane_icon.end1 = new Engine::RenderObject(cylinderMesh, material);
+	cane_icon.end1->AddParent(cane_icon.center);
+	cane_icon.end1->SetPosition(glm::vec3(0.0f, 0.01f * cos(angle), 0.01f * sin(angle)));
+	cane_icon.end1->SetOrientation(glm::rotate(glm::mat4(1.0f), angle, glm::vec3(1.0f, 0.0f, 0.0f)));
+	cane_icon.end1->SetScale(glm::vec3(0.003f, 0.003f, 0.004f));
+	cane_icon.end2 = new Engine::RenderObject(cylinderMesh, material);
+	cane_icon.end2->AddParent(cane_icon.center);
+	cane_icon.end2->SetPosition(glm::vec3(0.0f, 0.01f * cos(angle * 3), 0.01f * sin(angle * 3)));
+	cane_icon.end2->SetOrientation(glm::rotate(glm::mat4(1.0f), angle * 3, glm::vec3(1.0f, 0.0f, 0.0f)));
+	cane_icon.end2->SetScale(glm::vec3(0.003f, 0.003f, 0.004f));
+	cane_icon.end3 = new Engine::RenderObject(cylinderMesh, material);
+	cane_icon.end3->AddParent(cane_icon.center);
+	cane_icon.end3->SetPosition(glm::vec3(0.0f, 0.01f * cos(angle * 5), 0.01f * sin(angle * 5)));
+	cane_icon.end3->SetOrientation(glm::rotate(glm::mat4(1.0f), angle * 5, glm::vec3(1.0f, 0.0f, 0.0f)));
+	cane_icon.end3->SetScale(glm::vec3(0.003f, 0.003f, 0.004f));
+	cane_icon.end4 = new Engine::RenderObject(cylinderMesh, material);
+	cane_icon.end4->AddParent(cane_icon.center);
+	cane_icon.end4->SetPosition(glm::vec3(0.0f, 0.01f * cos(angle * 7), 0.01f * sin(angle * 7)));
+	cane_icon.end4->SetOrientation(glm::rotate(glm::mat4(1.0f), angle * 7, glm::vec3(1.0f, 0.0f, 0.0f)));
+	cane_icon.end4->SetScale(glm::vec3(0.003f, 0.003f, 0.004f));
+	cane_icon.end5 = new Engine::RenderObject(cylinderMesh, material);
+	cane_icon.end5->AddParent(cane_icon.center);
+	cane_icon.end5->SetPosition(glm::vec3(0.0f, 0.01f * cos(angle * 9), 0.01f * sin(angle * 9)));
+	cane_icon.end5->SetOrientation(glm::rotate(glm::mat4(1.0f), angle * 9, glm::vec3(1.0f, 0.0f, 0.0f)));
+	cane_icon.end5->SetScale(glm::vec3(0.003f, 0.003f, 0.004f));
 }
 
 void Clothes::RenderObject(Engine::Camera *camera, DefaultMaterial *material, int index)
@@ -420,6 +494,15 @@ void Clothes::RenderObject(Engine::Camera *camera, DefaultMaterial *material, in
 		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xFF / 255.0f, 0xFF / 255.0f, 1.0f));
 		glove_left.wrist->Render(camera);
 		glove_right.wrist->Render(camera);
+		break;
+	case 8:
+		material->UpdateColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+		cane.base->Render(camera);
+		cane.end1->Render(camera);
+		cane.end2->Render(camera);
+		cane.end3->Render(camera);
+		cane.end4->Render(camera);
+		cane.end5->Render(camera);
 		break;
 	case 12:
 		material->UpdateColor(glm::vec4(0x14 / 255.0f, 0x6B / 255.0f, 0x3A / 255.0f, 1.0f));
@@ -504,6 +587,15 @@ void Clothes::RenderUIObject(Engine::Camera *camera, DefaultMaterial *material, 
 		red_glove_icon.thumb->Render(camera);
 		material->UpdateColor(glm::vec4(0xFF / 255.0f, 0xFF / 255.0f, 0xFF / 255.0f, 1.0f));
 		red_glove_icon.wrist->Render(camera);
+		break;
+	case 8:
+		material->UpdateColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+		cane_icon.base->Render(camera);
+		cane_icon.end1->Render(camera);
+		cane_icon.end2->Render(camera);
+		cane_icon.end3->Render(camera);
+		cane_icon.end4->Render(camera);
+		cane_icon.end5->Render(camera);
 		break;
 	case 12:
 		material->UpdateColor(glm::vec4(0x14 / 255.0f, 0x6B / 255.0f, 0x3A / 255.0f, 1.0f));
