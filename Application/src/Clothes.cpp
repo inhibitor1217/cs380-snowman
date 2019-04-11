@@ -475,7 +475,9 @@ Clothes::Clothes(Geometry geometry, Engine::Material *material)
 	wand.root = new Engine::RenderObject(nullptr, nullptr);
 	wand.root->SetOrientation(glm::rotate(
 		glm::rotate(
-			glm::mat4(1.0f), 1.0f, glm::vec3(1.0f, 0.0f, 0.0f)
+			glm::rotate(
+				glm::mat4(1.0f), -0.7f, glm::vec3(0.0f, 0.0f, 1.0f)
+			), 1.0f, glm::vec3(1.0f, 0.0f, 0.0f)
 		), 1.3f, glm::vec3(0.0f, 1.0f, 0.0f)
 	));
 	wand.body = new Engine::RenderObject(wandMesh, material);

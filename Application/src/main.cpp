@@ -361,19 +361,46 @@ int main(int argc, char** argv)
     float prev_time = 0;
 
 	// initialize animation
-	Animation::KeyFrame idleKeyFrame;
-	idleKeyFrame.torsoJoint = glm::quat_cast(glm::mat4(1.0f));
-	idleKeyFrame.headJoint = glm::quat_cast(glm::mat4(1.0f));
-	idleKeyFrame.leftShoulder = glm::quat_cast(glm::rotate(
+	glm::quat idle_torso = glm::quat_cast(glm::mat4(1.0f));
+	glm::quat idle_head = glm::quat_cast(glm::mat4(1.0f));
+	glm::quat idle_leftShoulder = glm::quat_cast(glm::rotate(
 		glm::mat4(1.0f), 1.2f, glm::vec3(0.0f, 1.0f, -0.1f)
 	));
-	idleKeyFrame.rightShoulder = glm::quat_cast(glm::rotate(
+	glm::quat idle_rightShoulder = glm::quat_cast(glm::rotate(
 		glm::mat4(1.0f), -1.4f, glm::vec3(0.0f, 1.0f, -0.2f)
 	));
 
-	
+	Animation *anim_cast1 = new Animation();
+	anim_cast1->keyframes_torso[0.0f] = idle_torso;
+	anim_cast1->keyframes_torso[0.4f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), 0.8f, glm::vec3(0.0f, 0.0f, 1.0f)
+	));
+	anim_cast1->keyframes_torso[0.8f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -0.2f, glm::vec3(1.0f, -0.2f,0.0f)
+	));
+	anim_cast1->keyframes_torso[1.2f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -0.3f, glm::vec3(0.0f, 0.0f, 1.0f)
+	));
+	anim_cast1->keyframes_torso[1.5f] = idle_torso;
+	anim_cast1->keyframes_head[0.0f] = idle_head;
+	anim_cast1->keyframes_head[0.4f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -0.8f, glm::vec3(0.0f, 0.0f, 1.0f)
+	));
+	anim_cast1->keyframes_head[1.5f] = idle_head;
+	anim_cast1->keyframes_leftShoulder[0.0f] = idle_leftShoulder;
+	anim_cast1->keyframes_rightShoulder[0.0f] = idle_rightShoulder;
+	anim_cast1->keyframes_rightShoulder[0.3f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -1.2f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
+	anim_cast1->keyframes_rightShoulder[0.8f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -0.7f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
+	anim_cast1->keyframes_rightShoulder[1.2f] = glm::quat_cast(glm::rotate(
+		glm::mat4(1.0f), -1.3f, glm::vec3(0.0f, 1.0f, -0.2f)
+	));
+	anim_cast1->keyframes_rightShoulder[1.5f] = idle_rightShoulder;
 
-	anim_Q = nullptr;
+	anim_Q = anim_cast1;
 	anim_W = nullptr;
 	anim_E = nullptr;
 	anim_R = nullptr;
