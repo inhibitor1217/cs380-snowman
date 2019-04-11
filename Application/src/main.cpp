@@ -93,6 +93,7 @@ std::map<int, Engine::RenderObject *> g_renderObjects;
 
 /* Static pointer to active animation. */
 Animation *activeAnimation;
+Animation *anim_Q, *anim_W, *anim_E, *anim_R;
 
 static void MouseButtonCallback(GLFWwindow* a_window, int a_button, int a_action, int a_mods)
 {
@@ -183,6 +184,26 @@ static void KeyboardCallback(GLFWwindow* a_window, int a_key, int a_scancode, in
         switch (a_key)
         {
 		// TODO: SELECT ANIMATION BY KEYBOARD INPUT
+		case GLFW_KEY_Q:
+			if (anim_Q != nullptr)
+				anim_Q->InitTime();
+			activeAnimation = anim_Q;
+			break;
+		case GLFW_KEY_W:
+			if (anim_W != nullptr)
+				anim_W->InitTime();
+			activeAnimation = anim_W;
+			break;
+		case GLFW_KEY_E:
+			if (anim_E != nullptr)
+				anim_E->InitTime();
+			activeAnimation = anim_W;
+			break;
+		case GLFW_KEY_R:
+			if (anim_R != nullptr)
+				anim_R->InitTime();
+			activeAnimation = anim_W;
+			break;
         default:
             break;
         }
@@ -350,11 +371,12 @@ int main(int argc, char** argv)
 		glm::mat4(1.0f), -1.4f, glm::vec3(0.0f, 1.0f, -0.2f)
 	));
 
-	Animation::KeyFrame keyframe = idleKeyFrame;
 	
-	Animation *anim_1 = new Animation();
-	// TODO: ADD MORE ANIMATIONS AND KEYFRAMES
 
+	anim_Q = nullptr;
+	anim_W = nullptr;
+	anim_E = nullptr;
+	anim_R = nullptr;
 	activeAnimation = nullptr;
 
     /* Loop until the user closes the window */
